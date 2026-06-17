@@ -1,0 +1,16 @@
+node_modules/
+.next/
+dist/
+build/
+out/
+.git/
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.gif
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+artifacts/
+cache/
