@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 4px 1px rgba(37, 99, 235, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 14px 4px rgba(37, 99, 235, 0.9);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
