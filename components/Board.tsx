@@ -29,7 +29,7 @@ export default function Board({
         "relative mx-auto w-full max-w-[380px] aspect-square p-4",
         "rounded-full",
         "bg-[radial-gradient(circle_at_35%_25%,#9a6a3f,#6B4423_55%,#4a2f17_100%)]",
-        "shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_2px_4px_rgba(255,255,255,0.15),inset_0_-4px_10px_rgba(0,0,0,0.4)]",
+        "shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_2px_4px_rgba(255,255,255,0.15),inset_0_-4px_10px_rgba(0,0,0,0.4),0_0_30px_rgba(0,82,255,0.25),0_0_60px_rgba(0,82,255,0.15)]",
         "border-4 border-[#3a2310]",
       ].join(" ")}
     >
