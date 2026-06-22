@@ -22,20 +22,26 @@ export default function Board({
   onCellClick,
 }: BoardProps) {
   const cols = board[0]?.length ?? 0;
+  const HOLE_SIZE = "33px";
+  const GAP = "8px";
 
   return (
     <div
       className={[
-        "relative mx-auto w-full max-w-[380px] aspect-square p-4",
+        "relative mx-auto aspect-square p-4",
         "rounded-full",
         "bg-[radial-gradient(circle_at_35%_25%,#9a6a3f,#6B4423_55%,#4a2f17_100%)]",
         "shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_2px_4px_rgba(255,255,255,0.15),inset_0_-4px_10px_rgba(0,0,0,0.4),0_0_30px_rgba(0,82,255,0.25),0_0_60px_rgba(0,82,255,0.15)]",
         "border-4 border-[#3a2310]",
       ].join(" ")}
+      style={{ width: "min(76vw, 330px)" }}
     >
       <div
-        className="grid w-full h-full"
-        style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
+        className="grid w-full h-full place-content-center"
+        style={{
+          gridTemplateColumns: `repeat(${cols}, ${HOLE_SIZE})`,
+          gap: GAP,
+        }}
       >
         {board.map((row, rowIdx) =>
           row.map((cell, colIdx) => {
@@ -43,14 +49,18 @@ export default function Board({
 
             if (cell === "blocked") {
               return (
-                <div key={`${rowIdx}-${colIdx}`} className="aspect-square" />
+                <div
+                  key={`${rowIdx}-${colIdx}`}
+                  style={{ width: HOLE_SIZE, height: HOLE_SIZE }}
+                />
               );
             }
 
             return (
               <div
                 key={`${rowIdx}-${colIdx}`}
-                className="aspect-square flex items-center justify-center"
+                className="flex items-center justify-center"
+                style={{ width: HOLE_SIZE, height: HOLE_SIZE }}
               >
                 <Peg
                   hasPeg={cell === "peg"}
