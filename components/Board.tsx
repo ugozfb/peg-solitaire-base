@@ -30,9 +30,9 @@ export default function Board({
       className={[
         "relative mx-auto aspect-square p-4",
         "rounded-full",
-        "bg-[radial-gradient(circle_at_35%_25%,#9a6a3f,#6B4423_55%,#4a2f17_100%)]",
-        "shadow-[0_8px_20px_rgba(0,0,0,0.5),inset_0_2px_4px_rgba(255,255,255,0.15),inset_0_-4px_10px_rgba(0,0,0,0.4),0_0_30px_rgba(0,82,255,0.25),0_0_60px_rgba(0,82,255,0.15)]",
-        "border-4 border-[#3a2310]",
+        "bg-[repeating-linear-gradient(-18deg,rgba(0,0,0,0.10)_0px,rgba(0,0,0,0.10)_2px,transparent_2px,transparent_7px),repeating-linear-gradient(-14deg,rgba(255,255,255,0.04)_0px,rgba(255,255,255,0.04)_1px,transparent_1px,transparent_11px),radial-gradient(circle_at_32%_22%,rgba(255,220,180,0.35)_0%,transparent_38%),radial-gradient(circle_at_50%_42%,#6b4226_0%,#5a3620_38%,#3f2415_72%,#2a1810_100%)]",
+        "shadow-[inset_0_3px_8px_rgba(255,220,180,0.18),inset_0_-12px_30px_rgba(0,0,0,0.55),inset_0_0_40px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(0,82,255,0.25),0_0_60px_rgba(0,82,255,0.15)]",
+        "border-4 border-[#2a1810]",
       ].join(" ")}
       style={{ width: "min(76vw, 330px)" }}
     >
