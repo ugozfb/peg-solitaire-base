@@ -33,7 +33,7 @@ export default function Board({
       className={[
         "relative mx-auto aspect-square p-4",
         "rounded-full",
-        "shadow-[inset_0_3px_8px_rgba(255,220,180,0.18),inset_0_-12px_30px_rgba(0,0,0,0.55),inset_0_0_40px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(0,82,255,0.25),0_0_60px_rgba(0,82,255,0.15)]",
+        "shadow-[inset_0_3px_8px_rgba(255,220,180,0.18),inset_0_-12px_30px_rgba(0,0,0,0.55),inset_0_0_40px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(0,82,255,0.45),0_0_38px_rgba(0,82,255,0.30),0_0_55px_rgba(99,66,255,0.35),0_0_80px_rgba(140,70,255,0.30),0_0_120px_rgba(160,80,255,0.20)]",
         "border-4 border-[#2a1810]",
       ].join(" ")}
       style={{
