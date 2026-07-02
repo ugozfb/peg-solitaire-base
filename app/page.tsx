@@ -96,36 +96,40 @@ export default function Home() {
         ].join(", "),
       }}
     >
-      <main className="flex-1 flex flex-col gap-8 px-4 py-6 max-w-[420px] w-full mx-auto">
+      <main className="flex-1 flex flex-col px-4 py-6 max-w-[420px] w-full mx-auto">
         {/* Üst başlık */}
-        <header className="flex flex-col items-center gap-2">
+        <header className="flex flex-col items-center gap-1">
           <h1 className="text-2xl font-led tracking-[0.2em] text-brand-primary [text-shadow:0_0_10px_rgba(91,155,255,0.6),0_0_20px_rgba(91,155,255,0.3)]">
             PEG SOLITAIRE
           </h1>
           <span className="text-[11px] font-mono tracking-[0.25em] text-brand-dim opacity-50">
-            Connect Wallet
+            BASE NETWORK
           </span>
         </header>
 
         {/* Stats panel */}
-        <StatsPanel
-          pegs={countPegs(game)}
-          moves={game.moves.length}
-          time={timer.formatted}
-        />
+        <div className="mt-6">
+          <StatsPanel
+            pegs={countPegs(game)}
+            moves={game.moves.length}
+            time={timer.formatted}
+          />
+        </div>
 
-        {/* Aktif tahta adı */}
-        <p className="text-center text-xs font-mono tracking-[0.15em] text-brand-muted opacity-70">
+        {/* Aktif tahta adı — board'a ait */}
+        <p className="text-center text-xs font-mono tracking-[0.15em] text-brand-muted opacity-50 mt-10">
           {LAYOUT.name} Board
         </p>
 
         {/* Board */}
-        <Board
-          board={game.board}
-          selectedPeg={game.selectedPeg}
-          validTargets={validTargets}
-          onCellClick={handleCellClick}
-        />
+        <div className="mt-2">
+          <Board
+            board={game.board}
+            selectedPeg={game.selectedPeg}
+            validTargets={validTargets}
+            onCellClick={handleCellClick}
+          />
+        </div>
 
         {game.isComplete && (
           <p className="text-center font-mono text-[#2563EB] tracking-wider [text-shadow:0_0_10px_rgba(37,99,235,0.8)]">
