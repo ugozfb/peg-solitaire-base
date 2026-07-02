@@ -33,12 +33,12 @@ export default function Board({
       className={[
         "relative mx-auto aspect-square p-4",
         "rounded-full",
-        "shadow-[inset_0_3px_8px_rgba(255,220,180,0.18),inset_0_-12px_30px_rgba(0,0,0,0.55),inset_0_0_40px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(0,82,255,0.45),0_0_38px_rgba(0,82,255,0.30),0_0_55px_rgba(99,66,255,0.35),0_0_80px_rgba(140,70,255,0.30),0_0_120px_rgba(160,80,255,0.20)]",
+        "shadow-[inset_0_3px_8px_rgba(255,220,180,0.18),inset_0_-12px_30px_rgba(0,0,0,0.55),inset_0_0_40px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(0,82,255,0.45),0_0_38px_rgba(0,82,255,0.30),0_0_55px_rgba(99,66,255,0.35),0_0_80px_rgba(140,70,255,0.30),0_0_120px_rgba(160,80,255,0.20),0_0_160px_rgba(180,90,255,0.10)]",
         "border-4 border-[#2a1810]",
       ].join(" ")}
       style={{
         width: "min(76vw, 330px)",
-        backgroundImage: `radial-gradient(circle at 32% 22%, rgba(255,225,190,0.15) 0%, transparent 38%), radial-gradient(circle at 50% 42%, transparent 55%, rgba(0,0,0,0.45) 100%), url("${WOOD}")`,
+        backgroundImage: `radial-gradient(ellipse at 50% 18%, rgba(255,248,235,0.10) 0%, transparent 42%), radial-gradient(circle at 32% 22%, rgba(255,225,190,0.15) 0%, transparent 38%), radial-gradient(circle at 50% 42%, transparent 55%, rgba(0,0,0,0.45) 100%), url("${WOOD}")`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

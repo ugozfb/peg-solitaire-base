@@ -35,7 +35,7 @@ export default function Peg({
       <span
         className={[
           "absolute inset-0 [clip-path:polygon(25%_5%,75%_5%,100%_50%,75%_95%,25%_95%,0%_50%)]",
-          "bg-[#3a2415] shadow-[inset_0_3px_6px_rgba(0,0,0,0.7),inset_0_-1px_2px_rgba(255,255,255,0.05)]",
+          "bg-[radial-gradient(circle_at_50%_42%,#332015_0%,#3d2819_55%,#2b180d_100%)] shadow-[inset_0_4px_8px_rgba(0,0,0,0.85),inset_0_-2px_3px_rgba(255,255,255,0.08),inset_0_0_10px_rgba(0,0,0,0.5)]",
         ].join(" ")}
       />
 
