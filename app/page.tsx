@@ -68,14 +68,41 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col flex-1 min-h-screen bg-[#020817] text-white">
-      <main className="flex-1 flex flex-col gap-6 px-4 py-6 max-w-[420px] w-full mx-auto">
+    <div
+      className="flex flex-col flex-1 min-h-screen text-white"
+      style={{
+        background: [
+          /* dots — 16 scattered points, varied opacity/size */
+          "radial-gradient(circle at 12% 18%, rgba(90,155,255,0.06) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 27% 63%, rgba(90,155,255,0.05) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 41% 22%, rgba(120,180,255,0.10) 0%, transparent 2px)",
+          "radial-gradient(circle at 58% 81%, rgba(90,155,255,0.04) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 73% 34%, rgba(90,155,255,0.06) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 84% 71%, rgba(120,180,255,0.09) 0%, transparent 2px)",
+          "radial-gradient(circle at 19% 89%, rgba(90,155,255,0.05) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 91% 12%, rgba(90,155,255,0.05) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 33% 47%, rgba(90,155,255,0.04) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 64% 56%, rgba(90,155,255,0.06) 0%, transparent 1.5px)",
+          "radial-gradient(circle at  8% 52%, rgba(90,155,255,0.05) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 47% 93%, rgba(90,155,255,0.04) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 78%  8%, rgba(90,155,255,0.05) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 55% 15%, rgba(90,155,255,0.05) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 36% 76%, rgba(90,155,255,0.04) 0%, transparent 1.5px)",
+          "radial-gradient(circle at 88% 44%, rgba(120,180,255,0.07) 0%, transparent 2px)",
+          /* vignette */
+          "radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(0,0,0,0.35) 100%)",
+          /* base color */
+          "#020817",
+        ].join(", "),
+      }}
+    >
+      <main className="flex-1 flex flex-col gap-8 px-4 py-6 max-w-[420px] w-full mx-auto">
         {/* Üst başlık */}
-        <header className="flex flex-col items-center gap-1">
-          <h1 className="text-2xl font-mono font-bold tracking-[0.15em] text-[#2563EB] [text-shadow:0_0_12px_rgba(37,99,235,0.7)]">
+        <header className="flex flex-col items-center gap-2">
+          <h1 className="text-2xl font-led tracking-[0.2em] text-brand-primary [text-shadow:0_0_10px_rgba(91,155,255,0.6),0_0_20px_rgba(91,155,255,0.3)]">
             PEG SOLITAIRE
           </h1>
-          <span className="text-xs font-mono text-[#2563EB]/50">
+          <span className="text-[11px] font-mono tracking-[0.25em] text-brand-dim opacity-50">
             Connect Wallet
           </span>
         </header>
@@ -88,7 +115,7 @@ export default function Home() {
         />
 
         {/* Aktif tahta adı */}
-        <p className="text-center text-xs font-mono text-[#2563EB]/60 tracking-wider">
+        <p className="text-center text-xs font-mono tracking-[0.15em] text-brand-muted opacity-70">
           {LAYOUT.name} Board
         </p>
 

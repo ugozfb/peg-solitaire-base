@@ -9,10 +9,10 @@ type StatsPanelProps = {
 function StatItem({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="flex flex-col items-center gap-1">
-      <span className="text-[10px] tracking-wide text-[#6b8cce] font-mono">
+      <span className="text-[10px] tracking-[0.2em] text-brand-muted font-mono opacity-70">
         {label}
       </span>
-      <span className="text-lg font-mono font-bold text-[#5b9bff] [text-shadow:0_0_8px_rgba(0,82,255,0.7)]">
+      <span className="text-xl font-led tracking-[0.05em] text-brand-primary [text-shadow:0_0_6px_rgba(91,155,255,0.35)]">
         {value}
       </span>
     </div>

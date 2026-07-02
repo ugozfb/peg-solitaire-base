@@ -10,6 +10,10 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-led: var(--font-led);
+  --color-brand-primary: #5b9bff;
+  --color-brand-muted: #6b8cce;
+  --color-brand-dim: #3b5a99;
 }
 
 body {
@@ -18,7 +22,7 @@ body {
     radial-gradient(circle at center, rgba(16, 24, 48, 0.6) 0%, rgba(3, 7, 18, 1) 80%),
     repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.01) 0px, rgba(255, 255, 255, 0.01) 2px, transparent 2px, transparent 4px);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-mono), Arial, Helvetica, sans-serif;
 }
 
 @keyframes pulse-glow {
