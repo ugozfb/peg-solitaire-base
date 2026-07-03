@@ -121,7 +121,7 @@ export default function Home() {
         </div>
 
         {/* Aktif tahta adı — board'a ait */}
-        <p className="flex items-center justify-center gap-3 text-xs font-mono uppercase tracking-[0.2em] text-brand-muted mt-10">
+        <p className="flex items-center justify-center gap-3 text-xs font-mono uppercase tracking-[0.3em] text-brand-muted mt-10">
           <span aria-hidden className="h-px w-8 bg-gradient-to-r from-transparent to-[#3b5a99]" />
           <span aria-hidden className="h-1 w-1 rounded-full bg-brand-muted [box-shadow:0_0_4px_rgba(107,140,206,0.8)]" />
           {LAYOUT.name} Board
