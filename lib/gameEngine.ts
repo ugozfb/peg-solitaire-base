@@ -121,7 +121,7 @@ export function initializeGame(layout: BoardLayout): GameState {
     board,
     moves: [],
     selectedPeg: null,
-    isComplete: false,
+    status: "playing",
   };
 
   return state;
@@ -217,7 +217,7 @@ export function isValidMove(
  *   - to   -> peg
  *   - moves listesine eklenir
  *   - selectedPeg temizlenir
- *   - isComplete güncellenir (tek peg kaldıysa true)
+ *   - status güncellenir (tek peg -> "won", hamle kalmadı -> "lost")
  *
  * Geçersiz hamlede state değiştirilmeden aynen döner.
  */
@@ -239,11 +239,15 @@ export function applyMove(
     board,
     moves: [...state.moves, move],
     selectedPeg: null,
-    isComplete: false,
+    status: "playing",
   };
 
-  // Tek peg kaldıysa oyun kazanıldı.
-  newState.isComplete = countPegs(newState) === 1;
+  // Tek peg kaldıysa kazanıldı; hamle kalmadıysa kaybedildi.
+  if (countPegs(newState) === 1) {
+    newState.status = "won";
+  } else if (isGameOver(newState, ruleSet)) {
+    newState.status = "lost";
+  }
 
   return newState;
 }
@@ -271,7 +275,7 @@ export function undoLastMove(state: GameState): GameState {
     board,
     moves: state.moves.slice(0, -1),
     selectedPeg: null,
-    isComplete: false, // Geri alma sonrası oyun tamamlanmış olamaz.
+    status: "playing", // Geri alma sonrası oyun tamamlanmış olamaz.
   };
 
   return newState;

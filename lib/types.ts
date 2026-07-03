@@ -53,11 +53,11 @@ export type Move = {
  * - board:       hücrelerin güncel durumu
  * - moves:       hamle geçmişi (undo için)
  * - selectedPeg: UI'da seçili olan peg (yoksa null)
- * - isComplete:  oyun kazanıldı mı (tek peg kaldı mı)
+ * - status:      oyun durumu — "won": tek peg kaldı, "lost": hamle kalmadı
  */
 export type GameState = {
   board: BoardCell[][];
   moves: Move[];
   selectedPeg: Position | null;
-  isComplete: boolean;
+  status: "playing" | "won" | "lost";
 };

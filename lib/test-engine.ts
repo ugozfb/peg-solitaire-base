@@ -54,7 +54,7 @@ console.log("1) initializeGame");
   eq("merkez (3,3) boştur", state.board[3][3], "empty");
   eq("hamle geçmişi boş", state.moves.length, 0);
   eq("seçili peg yok", state.selectedPeg, null);
-  eq("oyun tamamlanmamış", state.isComplete, false);
+  eq("oyun tamamlanmamış", state.status, "playing");
   // Toplam delik (peg + empty) = 33.
   let holes = 0;
   for (const r of state.board) for (const c of r) if (c !== "blocked") holes++;

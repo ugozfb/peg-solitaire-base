@@ -21,7 +21,7 @@ const LAYOUT = englishBoard;
 
 export default function Home() {
   const [game, setGame] = useState<GameState>(() => initializeGame(LAYOUT));
-  const timerRunning = game.moves.length > 0 && !game.isComplete;
+  const timerRunning = game.moves.length > 0 && game.status === "playing";
   const timer = useGameTimer(timerRunning);
 
   const validTargets: Position[] = game.selectedPeg
@@ -29,7 +29,7 @@ export default function Home() {
     : [];
 
   function handleCellClick(pos: Position) {
-    if (game.isComplete) return;
+    if (game.status !== "playing") return;
 
     const cell = game.board[pos.row][pos.col];
 
@@ -139,9 +139,15 @@ export default function Home() {
           />
         </div>
 
-        {game.isComplete && (
+        {game.status === "won" && (
           <p className="text-center font-mono text-[#2563EB] tracking-wider [text-shadow:0_0_10px_rgba(37,99,235,0.8)]">
             YOU WIN!
+          </p>
+        )}
+
+        {game.status === "lost" && (
+          <p className="text-center font-mono text-brand-muted tracking-wider">
+            GAME OVER — {countPegs(game)} PEGS LEFT
           </p>
         )}
 
