@@ -14,6 +14,8 @@
   --color-brand-primary: #5b9bff;
   --color-brand-muted: #6b8cce;
   --color-brand-dim: #3b5a99;
+  --color-brand-core: #dfeeff;
+  --color-brand-glow: #3b82f6;
 }
 
 body {

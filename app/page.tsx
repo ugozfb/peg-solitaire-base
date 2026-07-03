@@ -99,11 +99,15 @@ export default function Home() {
       <main className="flex-1 flex flex-col px-4 py-6 max-w-[420px] w-full mx-auto">
         {/* Üst başlık */}
         <header className="flex flex-col items-center gap-1">
-          <h1 className="text-2xl font-led tracking-[0.2em] text-brand-primary [text-shadow:0_0_10px_rgba(91,155,255,0.6),0_0_20px_rgba(91,155,255,0.3)]">
+          <h1 className="text-3xl sm:text-4xl font-led tracking-[0.2em] text-brand-core [text-shadow:0_0_6px_rgba(223,238,255,0.9),0_0_16px_rgba(59,130,246,0.55),0_0_34px_rgba(59,130,246,0.3)]">
             PEG SOLITAIRE
           </h1>
-          <span className="text-[11px] font-mono tracking-[0.25em] text-brand-dim opacity-50">
+          <span className="flex items-center gap-3 text-[11px] font-mono tracking-[0.25em] text-brand-muted">
+            <span aria-hidden className="h-px w-10 bg-gradient-to-r from-transparent to-[#3b5a99]" />
+            <span aria-hidden className="h-1 w-1 rounded-full bg-brand-muted [box-shadow:0_0_4px_rgba(107,140,206,0.8)]" />
             BASE NETWORK
+            <span aria-hidden className="h-1 w-1 rounded-full bg-brand-muted [box-shadow:0_0_4px_rgba(107,140,206,0.8)]" />
+            <span aria-hidden className="h-px w-10 bg-gradient-to-l from-transparent to-[#3b5a99]" />
           </span>
         </header>
 
@@ -117,8 +121,12 @@ export default function Home() {
         </div>
 
         {/* Aktif tahta adı — board'a ait */}
-        <p className="text-center text-xs font-mono tracking-[0.15em] text-brand-muted opacity-50 mt-10">
+        <p className="flex items-center justify-center gap-3 text-xs font-mono uppercase tracking-[0.2em] text-brand-muted mt-10">
+          <span aria-hidden className="h-px w-8 bg-gradient-to-r from-transparent to-[#3b5a99]" />
+          <span aria-hidden className="h-1 w-1 rounded-full bg-brand-muted [box-shadow:0_0_4px_rgba(107,140,206,0.8)]" />
           {LAYOUT.name} Board
+          <span aria-hidden className="h-1 w-1 rounded-full bg-brand-muted [box-shadow:0_0_4px_rgba(107,140,206,0.8)]" />
+          <span aria-hidden className="h-px w-8 bg-gradient-to-l from-transparent to-[#3b5a99]" />
         </p>
 
         {/* Board */}
