@@ -10,6 +10,7 @@ import {
   undoLastMove,
 } from "@/lib/gameEngine";
 import { englishBoard } from "@/lib/boards/english";
+import { getRank } from "@/lib/ranks";
 import { useGameTimer } from "@/lib/useGameTimer";
 import type { GameState, Position } from "@/lib/types";
 import Board from "@/components/Board";
@@ -144,6 +145,7 @@ export default function Home() {
               status={game.status}
               pegsLeft={countPegs(game)}
               onPlayAgain={handleRestart}
+              rank={getRank(countPegs(game))}
             />
           )}
         </div>

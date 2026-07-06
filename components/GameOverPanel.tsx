@@ -1,12 +1,13 @@
 // Board üzerinde beliren oyun sonu paneli (overlay) — modal değil, board'un doğal devamı.
 
 import { useEffect, useState } from "react";
+import type { Rank } from "@/lib/ranks";
 
 type GameOverPanelProps = {
   status: "won" | "lost";
   pegsLeft: number;
   onPlayAgain: () => void;
-  accentColor?: string;
+  rank: Rank;
 };
 
 function RestartIcon() {
@@ -28,11 +29,45 @@ function RestartIcon() {
   );
 }
 
+const RANK_ICON_PATHS: Record<string, React.ReactNode> = {
+  crown: (
+    <path d="m3 8 4 4 5-7 5 7 4-4-2 10H5L3 8Z" />
+  ),
+  diamond: <path d="M12 3 3 10l9 11 9-11-9-7Z" />,
+  up: <path d="m5 15 7-6 7 6M5 9l7-6 7 6" />,
+  bolt: <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" />,
+  block: <rect x="4" y="4" width="16" height="16" rx="2" />,
+  circle: <circle cx="12" cy="12" r="8" />,
+  down: <path d="m5 9 7 6 7-6" />,
+  minus: <path d="M5 12h14" />,
+  downdown: <path d="m5 6 7 6 7-6M5 12l7 6 7-6" />,
+  cross: <path d="M6 6l12 12M18 6 6 18" />,
+};
+
+function RankIcon({ iconKey }: { iconKey: string }) {
+  const path = RANK_ICON_PATHS[iconKey] ?? RANK_ICON_PATHS.circle;
+  return (
+    <svg
+      width="28"
+      height="28"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      {path}
+    </svg>
+  );
+}
+
 export default function GameOverPanel({
   status,
   pegsLeft,
   onPlayAgain,
-  accentColor = "#5b9bff",
+  rank,
 }: GameOverPanelProps) {
   const [visible, setVisible] = useState(false);
 
@@ -41,8 +76,8 @@ export default function GameOverPanel({
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const title = status === "won" ? "YOU WIN" : "GAME OVER";
-  const subtitle = pegsLeft === 1 ? "1 PEG LEFT" : `${pegsLeft} PEGS LEFT`;
+  const pegLabel = pegsLeft === 1 ? "1 PEG" : `${pegsLeft} PEGS`;
+  const statusLabel = status === "won" ? "WON" : "RUN COMPLETE";
 
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center">
@@ -60,44 +95,72 @@ export default function GameOverPanel({
           "relative w-full max-w-[280px] mx-4 rounded-2xl",
           "bg-[rgba(10,18,40,0.96)] backdrop-blur-md",
           "shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
-          "flex flex-col items-center gap-4 px-6 py-6",
+          "flex flex-col items-center gap-3 px-6 py-6",
           "transition-all duration-250 ease-out",
           visible ? "opacity-100 scale-100" : "opacity-0 scale-95",
         ].join(" ")}
-        style={{ border: `1px solid ${accentColor}4d` }}
+        style={{ border: `1px solid ${rank.color}4d` }}
       >
-        {/* Başlık */}
+        {/* Sonuç bloğu: ikon + isim + mesaj, sıkı grup */}
         <div className="flex flex-col items-center gap-2">
-          <span className="flex items-center gap-3 text-[10px] font-mono tracking-[0.25em] text-brand-muted">
-            <span aria-hidden className="h-px w-6 bg-gradient-to-r from-transparent to-[#3b5a99]" />
-            <span aria-hidden className="h-1 w-1 rounded-full bg-brand-muted [box-shadow:0_0_4px_rgba(107,140,206,0.8)]" />
-            <span aria-hidden className="h-px w-6 bg-gradient-to-l from-transparent to-[#3b5a99]" />
-          </span>
-          <h2
-            className="text-2xl font-led tracking-[0.15em]"
+          <span
             style={{
-              color: accentColor,
-              textShadow: `0 0 6px ${accentColor}e6, 0 0 16px ${accentColor}8c`,
+              color: rank.color,
+              filter:
+                rank.glow > 0
+                  ? `drop-shadow(0 0 ${6 * rank.glow}px ${rank.color})`
+                  : "none",
             }}
           >
-            {title}
-          </h2>
+            <RankIcon iconKey={rank.icon} />
+          </span>
+          <span
+            className="text-2xl font-led tracking-[0.1em] text-center"
+            style={{
+              color: rank.color,
+              textShadow:
+                rank.glow > 0
+                  ? `0 0 ${6 * rank.glow}px ${rank.color}, 0 0 ${16 * rank.glow}px ${rank.color}`
+                  : "none",
+            }}
+          >
+            {rank.name}
+          </span>
+          <span className="text-[11px] font-mono italic text-brand-muted text-center">
+            {rank.message}
+          </span>
         </div>
 
-        {/* Alt bilgi */}
-        <p className="text-xs font-mono tracking-[0.15em] text-brand-muted">
-          {subtitle}
-        </p>
+        {/* Ayırıcı */}
+        <span
+          aria-hidden
+          className="flex items-center gap-2 w-full"
+        >
+          <span
+            className="h-px flex-1"
+            style={{ backgroundImage: `linear-gradient(to right, transparent, ${rank.color}66)` }}
+          />
+          <span
+            className="h-1 w-1 rounded-full shrink-0"
+            style={{ backgroundColor: rank.color, boxShadow: `0 0 4px ${rank.color}cc` }}
+          />
+          <span
+            className="h-px flex-1"
+            style={{ backgroundImage: `linear-gradient(to left, transparent, ${rank.color}66)` }}
+          />
+        </span>
 
-        {/* 5b: rank buraya */}
-        <div className="min-h-[40px] w-full" />
+        {/* Meta satır */}
+        <p className="text-xs font-mono tracking-wider text-brand-muted text-center">
+          {pegLabel} · {statusLabel}
+        </p>
 
         {/* Play again */}
         <button
           type="button"
           onClick={onPlayAgain}
           className={[
-            "w-full py-3 rounded-full font-mono text-sm tracking-wider",
+            "w-full py-3 rounded-full font-mono text-sm tracking-wider mt-3",
             "flex items-center justify-center gap-2",
             "border border-brand-primary/50 bg-black/40 text-brand-primary",
             "shadow-[0_0_12px_rgba(59,130,246,0.25),inset_0_0_8px_rgba(59,130,246,0.08)]",
@@ -109,10 +172,6 @@ export default function GameOverPanel({
         </button>
 
         {/* 5d: X + Farcaster share */}
-        <div className="flex gap-3 w-full">
-          <div className="flex-1 h-9 rounded-full border border-brand-dim/30" />
-          <div className="flex-1 h-9 rounded-full border border-brand-dim/30" />
-        </div>
       </div>
     </div>
   );
