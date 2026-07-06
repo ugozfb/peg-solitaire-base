@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Rank } from "@/lib/ranks";
+import { buildShareText, APP_URL } from "@/lib/share";
 
 type GameOverPanelProps = {
   status: "won" | "lost";
@@ -25,6 +26,14 @@ function RestartIcon() {
     >
       <path d="M21 12a9 9 0 1 1-3-6.7" />
       <path d="M21 3v5h-5" />
+    </svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
     </svg>
   );
 }
@@ -78,6 +87,12 @@ export default function GameOverPanel({
 
   const pegLabel = pegsLeft === 1 ? "1 PEG" : `${pegsLeft} PEGS`;
   const statusLabel = status === "won" ? "WON" : "RUN COMPLETE";
+
+  const handleShareX = () => {
+    const text = buildShareText({ rank, pegsLeft, platform: "x" });
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text + "\n" + APP_URL)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
 
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center">
@@ -171,7 +186,22 @@ export default function GameOverPanel({
           PLAY AGAIN
         </button>
 
-        {/* 5d: X + Farcaster share */}
+        {/* 5d: Share */}
+        <div className="flex items-center justify-center gap-3 w-full mt-1">
+          <button
+            type="button"
+            onClick={handleShareX}
+            aria-label="Share on X"
+            className={[
+              "flex items-center justify-center flex-1 py-2.5 rounded-full",
+              "border border-white/15 bg-white/5 text-brand-muted",
+              "active:scale-95 transition-transform",
+            ].join(" ")}
+          >
+            <XIcon />
+          </button>
+          {/* Parça 3: Farcaster butonu buraya */}
+        </div>
       </div>
     </div>
   );
