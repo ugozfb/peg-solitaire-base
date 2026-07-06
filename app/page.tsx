@@ -13,6 +13,7 @@ import { englishBoard } from "@/lib/boards/english";
 import { useGameTimer } from "@/lib/useGameTimer";
 import type { GameState, Position } from "@/lib/types";
 import Board from "@/components/Board";
+import GameOverPanel from "@/components/GameOverPanel";
 import StatsPanel from "@/components/StatsPanel";
 import GameButtons from "@/components/GameButtons";
 import BottomNav from "@/components/BottomNav";
@@ -130,26 +131,22 @@ export default function Home() {
         </p>
 
         {/* Board */}
-        <div className="mt-2">
+        <div className="mt-2 relative">
           <Board
             board={game.board}
             selectedPeg={game.selectedPeg}
             validTargets={validTargets}
             onCellClick={handleCellClick}
           />
+
+          {game.status !== "playing" && (
+            <GameOverPanel
+              status={game.status}
+              pegsLeft={countPegs(game)}
+              onPlayAgain={handleRestart}
+            />
+          )}
         </div>
-
-        {game.status === "won" && (
-          <p className="text-center font-mono text-[#2563EB] tracking-wider [text-shadow:0_0_10px_rgba(37,99,235,0.8)]">
-            YOU WIN!
-          </p>
-        )}
-
-        {game.status === "lost" && (
-          <p className="text-center font-mono text-brand-muted tracking-wider">
-            GAME OVER — {countPegs(game)} PEGS LEFT
-          </p>
-        )}
 
         {/* Butonlar */}
         <GameButtons
