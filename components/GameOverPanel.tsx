@@ -1,9 +1,9 @@
 // Board üzerinde beliren oyun sonu paneli (overlay) — modal değil, board'un doğal devamı.
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 import type { Rank } from "@/lib/ranks";
-import { buildShareText, APP_URL } from "@/lib/share";
+import { buildShareText, pickShareVariant, APP_URL } from "@/lib/share";
 
 type GameOverPanelProps = {
   status: "won" | "lost";
@@ -97,14 +97,16 @@ export default function GameOverPanel({
   const pegLabel = pegsLeft === 1 ? "1 PEG" : `${pegsLeft} PEGS`;
   const statusLabel = status === "won" ? "WON" : "RUN COMPLETE";
 
+  const shareTemplate = useMemo(() => pickShareVariant(rank), [rank]);
+
   const handleShareX = () => {
-    const text = buildShareText({ rank, pegsLeft, platform: "x" });
+    const text = buildShareText({ rank, platform: "x", template: shareTemplate });
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text + "\n" + APP_URL)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const handleShareFarcaster = async () => {
-    const text = buildShareText({ rank, pegsLeft, platform: "farcaster" });
+    const text = buildShareText({ rank, platform: "farcaster", template: shareTemplate });
     try {
       const capabilities = await sdk.getCapabilities();
       if (capabilities.includes("actions.composeCast")) {
