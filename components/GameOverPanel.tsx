@@ -1,6 +1,7 @@
 // Board üzerinde beliren oyun sonu paneli (overlay) — modal değil, board'un doğal devamı.
 
 import { useEffect, useState } from "react";
+import { sdk } from "@farcaster/miniapp-sdk";
 import type { Rank } from "@/lib/ranks";
 import { buildShareText, APP_URL } from "@/lib/share";
 
@@ -37,6 +38,16 @@ function XIcon() {
     </svg>
   );
 }
+
+function FarcasterIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M5 3h14v3h-2.2v9.5c0 .4.3.7.7.7h.5v2.3h-4.6v-2.3h.5c.4 0 .7-.3.7-.7V9H9.4v6.5c0 .4.3.7.7.7h.5v2.3H6v-2.3h.5c.4 0 .7-.3.7-.7V6H5V3z" />
+    </svg>
+  );
+}
+// NOT: Bu geçici bir placeholder. Resmi Farcaster logosu (CC0)
+// simpleicons.org'dan alınıp bu path ile değiştirilecek.
 
 const RANK_ICON_PATHS: Record<string, React.ReactNode> = {
   crown: (
@@ -91,6 +102,21 @@ export default function GameOverPanel({
   const handleShareX = () => {
     const text = buildShareText({ rank, pegsLeft, platform: "x" });
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text + "\n" + APP_URL)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleShareFarcaster = async () => {
+    const text = buildShareText({ rank, pegsLeft, platform: "farcaster" });
+    try {
+      const capabilities = await sdk.getCapabilities();
+      if (capabilities.includes("actions.composeCast")) {
+        await sdk.actions.composeCast({ text, embeds: [APP_URL] });
+        return;
+      }
+    } catch {
+      // Mini App host değil / SDK erişilemez — web fallback'e düş
+    }
+    const url = `https://farcaster.xyz/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(APP_URL)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -200,7 +226,18 @@ export default function GameOverPanel({
           >
             <XIcon />
           </button>
-          {/* Parça 3: Farcaster butonu buraya */}
+          <button
+            type="button"
+            onClick={handleShareFarcaster}
+            aria-label="Share on Farcaster"
+            className={[
+              "flex items-center justify-center flex-1 py-2.5 rounded-full",
+              "border border-white/15 bg-white/5 text-brand-muted",
+              "active:scale-95 transition-transform",
+            ].join(" ")}
+          >
+            <FarcasterIcon />
+          </button>
         </div>
       </div>
     </div>
