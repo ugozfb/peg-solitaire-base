@@ -1,0 +1,21 @@
+{
+  "contractName": "PegSolitaireBoards",
+  "network": "baseSepolia",
+  "chainId": 84532,
+  "contractAddress": "0x5c27865c00844622bb92546124025019c566e471",
+  "deploymentTx": "0x1bc85b6592bc007209c2541386c42fbc8d6874c3af656e9b61248fc4913a3222",
+  "blockNumber": 44059021,
+  "deployer": "0xAB6FC7Fc5E0D76805A129757a0B64720E5726020",
+  "constructorArgs": [
+    "400000000000000",
+    "0xAB6FC7Fc5E0D76805A129757a0B64720E5726020"
+  ],
+  "unlockPriceWei": "400000000000000",
+  "unlockPriceEth": "0.0004",
+  "solcVersion": "0.8.24",
+  "optimizer": {
+    "enabled": true,
+    "runs": 200
+  },
+  "timestamp": "2026-07-13T06:52:24.604Z"
+}
