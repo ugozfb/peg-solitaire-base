@@ -146,6 +146,7 @@ export default function Home() {
             selectedPeg={game.selectedPeg}
             validTargets={validTargets}
             onCellClick={handleCellClick}
+            ruleSet={LAYOUT.ruleSet}
           />
 
           {game.status !== "playing" && (

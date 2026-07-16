@@ -1,7 +1,7 @@
 // Generic tahta render'ı: BoardLayout'un grid'ini alır, her hücreyi Peg
 // component'i ile render eder. "blocked" hücreler boşluk olarak gösterilir.
 
-import type { BoardCell, Position } from "@/lib/types";
+import type { BoardCell, Position, RuleSet } from "@/lib/types";
 import Peg from "./Peg";
 
 // A/B test: tek satırı değiştirip iki dokuyu karşılaştır.
@@ -12,6 +12,7 @@ type BoardProps = {
   selectedPeg: Position | null;
   validTargets: Position[];
   onCellClick: (pos: Position) => void;
+  ruleSet: RuleSet;
 };
 
 function isSamePosition(a: Position | null, b: Position): boolean {
@@ -23,6 +24,7 @@ export default function Board({
   selectedPeg,
   validTargets,
   onCellClick,
+  ruleSet,
 }: BoardProps) {
   const rows = board.length;
   const cols = board[0]?.length ?? 0;
@@ -36,7 +38,10 @@ export default function Board({
 
   const gridW = cols * CELL + (cols - 1) * CELL_GAP;
   const gridH = rows * CELL + (rows - 1) * CELL_GAP;
-  const idealSize = Math.max(gridW, gridH) + PAD;
+  const idealSize =
+    ruleSet === "triangular"
+      ? Math.max(gridW, gridH) * 1.18 + PAD
+      : Math.max(gridW, gridH) + PAD;
   const size = Math.min(idealSize, MAX_BOARD_SIZE);
 
   return (
@@ -63,45 +68,85 @@ export default function Board({
             transformOrigin: "top center",
           }}
         >
-          <div
-            className="grid w-full h-full place-content-center"
-            style={{
-              gridTemplateColumns: `repeat(${cols}, ${HOLE_SIZE})`,
-              gap: GAP,
-            }}
-          >
-            {board.map((row, rowIdx) =>
-              row.map((cell, colIdx) => {
-                const pos: Position = { row: rowIdx, col: colIdx };
+          {ruleSet === "triangular" ? (
+            <div
+              className="flex flex-col w-full h-full place-content-center"
+              style={{ gap: GAP }}
+            >
+              {board.map((row, rowIdx) => (
+                <div
+                  key={rowIdx}
+                  className="flex justify-center"
+                  style={{ gap: GAP }}
+                >
+                  {row.map((cell, colIdx) => {
+                    if (cell === "blocked") {
+                      return null;
+                    }
 
-                if (cell === "blocked") {
+                    const pos: Position = { row: rowIdx, col: colIdx };
+
+                    return (
+                      <div
+                        key={`${rowIdx}-${colIdx}`}
+                        className="flex items-center justify-center"
+                        style={{ width: HOLE_SIZE, height: HOLE_SIZE }}
+                      >
+                        <Peg
+                          hasPeg={cell === "peg"}
+                          isSelected={isSamePosition(selectedPeg, pos)}
+                          isValidTarget={validTargets.some(
+                            (t) => t.row === pos.row && t.col === pos.col
+                          )}
+                          onClick={() => onCellClick(pos)}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="grid w-full h-full place-content-center"
+              style={{
+                gridTemplateColumns: `repeat(${cols}, ${HOLE_SIZE})`,
+                gap: GAP,
+              }}
+            >
+              {board.map((row, rowIdx) =>
+                row.map((cell, colIdx) => {
+                  const pos: Position = { row: rowIdx, col: colIdx };
+
+                  if (cell === "blocked") {
+                    return (
+                      <div
+                        key={`${rowIdx}-${colIdx}`}
+                        style={{ width: HOLE_SIZE, height: HOLE_SIZE }}
+                      />
+                    );
+                  }
+
                   return (
                     <div
                       key={`${rowIdx}-${colIdx}`}
+                      className="flex items-center justify-center"
                       style={{ width: HOLE_SIZE, height: HOLE_SIZE }}
-                    />
+                    >
+                      <Peg
+                        hasPeg={cell === "peg"}
+                        isSelected={isSamePosition(selectedPeg, pos)}
+                        isValidTarget={validTargets.some(
+                          (t) => t.row === pos.row && t.col === pos.col
+                        )}
+                        onClick={() => onCellClick(pos)}
+                      />
+                    </div>
                   );
-                }
-
-                return (
-                  <div
-                    key={`${rowIdx}-${colIdx}`}
-                    className="flex items-center justify-center"
-                    style={{ width: HOLE_SIZE, height: HOLE_SIZE }}
-                  >
-                    <Peg
-                      hasPeg={cell === "peg"}
-                      isSelected={isSamePosition(selectedPeg, pos)}
-                      isValidTarget={validTargets.some(
-                        (t) => t.row === pos.row && t.col === pos.col
-                      )}
-                      onClick={() => onCellClick(pos)}
-                    />
-                  </div>
-                );
-              })
-            )}
-          </div>
+                })
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
