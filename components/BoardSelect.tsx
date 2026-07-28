@@ -4,6 +4,8 @@
 
 import { BOARDS } from "@/lib/boards";
 import type { BoardLayout } from "@/lib/types";
+import { useIsUnlocked } from "@/lib/hooks/useIsUnlocked";
+import WalletBar from "./WalletBar";
 
 type BoardSelectProps = {
   selectedId: number;
@@ -59,6 +61,114 @@ function ruleSetLabel(board: BoardLayout): string {
   return board.ruleSet === "triangular" ? "Triangular" : "Orthogonal";
 }
 
+// Kart kabuğu — üç durumda da (yükleniyor / kilitli / açık) aynı ölçüler.
+const CARD_SHELL =
+  "relative flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left border transition-colors";
+
+function BoardInfo({
+  board,
+  isSelected,
+}: {
+  board: BoardLayout;
+  isSelected: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span
+        className={[
+          "font-led text-base tracking-[0.08em]",
+          isSelected ? "text-brand-primary" : "text-brand-core",
+        ].join(" ")}
+      >
+        {board.name}
+      </span>
+      <span className="text-[11px] font-mono text-brand-muted tracking-wide">
+        {countHoles(board)} holes · {ruleSetLabel(board)}
+      </span>
+    </div>
+  );
+}
+
+// Her kart AYRI bir bileşen: useIsUnlocked'ı map içinde çağırmak
+// hook kurallarını ihlal ederdi (kart sayısı/sırası değişince hook
+// sırası bozulur). Kart başına bir bileşen = kart başına sabit hook seti.
+function BoardCard({
+  contractId,
+  board,
+  isSelected,
+  onPick,
+}: {
+  contractId: number;
+  board: BoardLayout;
+  isSelected: boolean;
+  onPick: (contractId: number) => void;
+}) {
+  const { isUnlocked, isLoading } = useIsUnlocked(contractId);
+
+  // Kilit durumu belirsizken rozet gösterme — yanlış bilgi vermektense boş dur.
+  if (isLoading) {
+    return (
+      <div className={[CARD_SHELL, "border-white/10 bg-white/5 opacity-60"].join(" ")}>
+        <BoardInfo board={board} isSelected={isSelected} />
+        <span className="text-[11px] font-mono text-brand-muted tracking-widest shrink-0">
+          …
+        </span>
+      </div>
+    );
+  }
+
+  if (!isUnlocked) {
+    return (
+      <div className={[CARD_SHELL, "border-white/10 bg-black/20"].join(" ")}>
+        <BoardInfo board={board} isSelected={false} />
+
+        <div className="flex items-center gap-2 shrink-0">
+          <span
+            className={[
+              "flex items-center gap-1 px-2 py-1 rounded-full",
+              "border border-brand-dim/50 bg-black/40 text-brand-muted",
+              "text-[10px] font-mono tracking-wider",
+            ].join(" ")}
+          >
+            <LockIcon />
+            LOCKED
+          </span>
+
+          {/* CTA yer tutucu — gerçek unlock akışı Adım 6b'de bağlanacak. */}
+          <button
+            type="button"
+            disabled
+            className={[
+              "px-2.5 py-1 rounded-full shrink-0",
+              "border border-brand-primary/40 bg-brand-primary/10 text-brand-primary",
+              "text-[10px] font-led tracking-wider",
+              "disabled:opacity-50",
+            ].join(" ")}
+          >
+            UNLOCK
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => onPick(contractId)}
+      className={[
+        CARD_SHELL,
+        isSelected
+          ? "border-brand-primary/60 bg-brand-primary/10 shadow-[0_0_12px_rgba(59,130,246,0.25),inset_0_0_8px_rgba(59,130,246,0.08)]"
+          : "border-white/10 bg-white/5",
+        "active:scale-[0.98]",
+      ].join(" ")}
+    >
+      <BoardInfo board={board} isSelected={isSelected} />
+    </button>
+  );
+}
+
 export default function BoardSelect({
   selectedId,
   onSelect,
@@ -108,54 +218,18 @@ export default function BoardSelect({
           </button>
         </div>
 
+        <WalletBar />
+
         <div className="flex flex-col gap-2">
-          {entries.map(([contractId, board]) => {
-            const isSelected = contractId === selectedId;
-            const isLocked = contractId !== 1;
-
-            return (
-              <button
-                key={board.id}
-                type="button"
-                onClick={() => handlePick(contractId)}
-                className={[
-                  "relative flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left",
-                  "border transition-colors",
-                  isSelected
-                    ? "border-brand-primary/60 bg-brand-primary/10 shadow-[0_0_12px_rgba(59,130,246,0.25),inset_0_0_8px_rgba(59,130,246,0.08)]"
-                    : "border-white/10 bg-white/5",
-                  "active:scale-[0.98]",
-                ].join(" ")}
-              >
-                <div className="flex flex-col gap-0.5">
-                  <span
-                    className={[
-                      "font-led text-base tracking-[0.08em]",
-                      isSelected ? "text-brand-primary" : "text-brand-core",
-                    ].join(" ")}
-                  >
-                    {board.name}
-                  </span>
-                  <span className="text-[11px] font-mono text-brand-muted tracking-wide">
-                    {countHoles(board)} holes · {ruleSetLabel(board)}
-                  </span>
-                </div>
-
-                {isLocked && (
-                  <span
-                    className={[
-                      "flex items-center gap-1 px-2 py-1 rounded-full shrink-0",
-                      "border border-brand-dim/50 bg-black/40 text-brand-muted",
-                      "text-[10px] font-mono tracking-wider",
-                    ].join(" ")}
-                  >
-                    <LockIcon />
-                    LOCKED
-                  </span>
-                )}
-              </button>
-            );
-          })}
+          {entries.map(([contractId, board]) => (
+            <BoardCard
+              key={board.id}
+              contractId={contractId}
+              board={board}
+              isSelected={contractId === selectedId}
+              onPick={handlePick}
+            />
+          ))}
         </div>
       </div>
     </div>
