@@ -1,14 +1,19 @@
 // Diamond Peg Solitaire tahtası (41 delik, elmas/baklava).
 //
 // 9x9 grid; elmas şekli köşeleri blocked bırakarak oluşturulur
-// (9x9 kare grid'in köşegenleri). Merkez (4,4) başlangıçta boş.
+// (9x9 kare grid'in köşegenleri). Başlangıç boş deliği (1,3).
 //
-//   Grid (B=blocked, P=peg, merkez başlangıçta empty):
+// Merkez (4,4) matematiksel olarak çözülemez (Diamond41 null-class
+// değildir). (1,3) Bell'in d2 açılışı; 26 hamlede çözülür, son peg
+// (1,5)'te biter.
+// Kaynak: gibell.net/pegsolitaire/Catalogs/Diamond41
+//
+//   Grid (B=blocked, P=peg, (1,3) başlangıçta empty):
 //     B B B B P B B B B
-//     B B B P P P B B B
+//     B B B . P P B B B   <- (1,3) initialEmpty
 //     B B P P P P P B B
 //     B P P P P P P P B
-//     P P P P . P P P P   <- (4,4) initialEmpty
+//     P P P P P P P P P
 //     B P P P P P P P B
 //     B B P P P P P B B
 //     B B B P P P B B B
@@ -37,6 +42,6 @@ export const diamondBoard: BoardLayout = {
   id: "diamond",
   name: "Diamond",
   grid,
-  initialEmpty: { row: 4, col: 4 },
+  initialEmpty: { row: 1, col: 3 },
   ruleSet: "orthogonal",
 };
