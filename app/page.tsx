@@ -9,7 +9,7 @@ import {
   selectPeg,
   undoLastMove,
 } from "@/lib/gameEngine";
-import { englishBoard } from "@/lib/boards/english";
+import { BOARDS } from "@/lib/boards";
 import { getRank } from "@/lib/ranks";
 import { useGameTimer } from "@/lib/useGameTimer";
 import type { GameState, Position } from "@/lib/types";
@@ -18,10 +18,12 @@ import GameOverPanel from "@/components/GameOverPanel";
 import StatsPanel from "@/components/StatsPanel";
 import GameButtons from "@/components/GameButtons";
 import BottomNav from "@/components/BottomNav";
-
-const LAYOUT = englishBoard;
+import BoardSelect from "@/components/BoardSelect";
 
 export default function Home() {
+  const [selectedBoardId, setSelectedBoardId] = useState(1);
+  const [boardSelectOpen, setBoardSelectOpen] = useState(false);
+  const LAYOUT = BOARDS[selectedBoardId];
   const [game, setGame] = useState<GameState>(() => initializeGame(LAYOUT));
   const timerRunning = game.moves.length > 0 && game.status === "playing";
   const timer = useGameTimer(timerRunning);
@@ -66,6 +68,12 @@ export default function Home() {
 
   function handleRestart() {
     setGame(initializeGame(LAYOUT));
+    timer.reset();
+  }
+
+  function handleBoardSelect(id: number) {
+    setSelectedBoardId(id);
+    setGame(initializeGame(BOARDS[id]));
     timer.reset();
   }
 
@@ -138,6 +146,7 @@ export default function Home() {
             selectedPeg={game.selectedPeg}
             validTargets={validTargets}
             onCellClick={handleCellClick}
+            ruleSet={LAYOUT.ruleSet}
           />
 
           {game.status !== "playing" && (
@@ -146,6 +155,14 @@ export default function Home() {
               pegsLeft={countPegs(game)}
               onPlayAgain={handleRestart}
               rank={getRank(countPegs(game))}
+            />
+          )}
+
+          {boardSelectOpen && (
+            <BoardSelect
+              selectedId={selectedBoardId}
+              onSelect={handleBoardSelect}
+              onClose={() => setBoardSelectOpen(false)}
             />
           )}
         </div>
@@ -159,7 +176,7 @@ export default function Home() {
       </main>
 
       {/* Alt navigasyon */}
-      <BottomNav />
+      <BottomNav onBoardsClick={() => setBoardSelectOpen(true)} />
     </div>
   );
 }

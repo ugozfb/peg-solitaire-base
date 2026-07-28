@@ -1,5 +1,5 @@
-// Alt navigasyon yer tutucu: Play / Boards / Leaderboard / Profile.
-// Henüz aktif değil — sadece görsel.
+// Alt navigasyon: Play / Boards / Leaderboard / Profile.
+// Boards dışındaki sekmeler henüz aktif değil — sadece görsel.
 
 const ITEMS = ["Play", "Boards", "Leaderboard", "Profile"];
 
@@ -86,7 +86,11 @@ function ProfileIcon() {
 
 const ICONS = [PlayIcon, BoardsIcon, LeaderboardIcon, ProfileIcon];
 
-export default function BottomNav() {
+type BottomNavProps = {
+  onBoardsClick?: () => void;
+};
+
+export default function BottomNav({ onBoardsClick }: BottomNavProps) {
   return (
     <nav className="relative w-full bg-black/60">
       <span
@@ -96,9 +100,12 @@ export default function BottomNav() {
       <div className="grid grid-cols-4 max-w-[380px] mx-auto">
         {ITEMS.map((item, idx) => {
           const Icon = ICONS[idx];
+          const isBoards = item === "Boards";
           return (
-            <div
+            <button
               key={item}
+              type="button"
+              onClick={isBoards ? onBoardsClick : undefined}
               className={[
                 "flex flex-col items-center justify-center gap-1 py-2",
                 "text-center text-[10px] font-mono tracking-wider",
@@ -109,7 +116,7 @@ export default function BottomNav() {
             >
               <Icon />
               {item.toUpperCase()}
-            </div>
+            </button>
           );
         })}
       </div>

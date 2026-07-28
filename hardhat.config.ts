@@ -1,4 +1,5 @@
 import "dotenv/config";
+
 import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
 import { configVariable, defineConfig } from "hardhat/config";
 
@@ -29,6 +30,11 @@ export default defineConfig({
       chainType: "op",
       url: configVariable("BASE_RPC_URL"),
       accounts: [configVariable("DEPLOYER_PRIVATE_KEY")],
+    },
+  },
+  verify: {
+    etherscan: {
+      apiKey: configVariable("ETHERSCAN_API_KEY"),
     },
   },
 });
