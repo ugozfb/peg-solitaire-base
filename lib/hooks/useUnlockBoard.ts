@@ -144,6 +144,7 @@ export function useUnlockBoard() {
     errorKind,
     error,
     txHash,
+    unlockPrice, // UI fiyatı göstersin diye; value hesabı yukarıda, değişmedi
     reset, // hash'i temizler -> receipt query'si devre dışı kalır, durum sıfırlanır
   };
 }
