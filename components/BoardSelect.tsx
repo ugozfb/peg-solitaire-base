@@ -26,6 +26,8 @@ const ERROR_MESSAGES: Record<Exclude<UnlockErrorKind, "AlreadyUnlocked">, string
   IncorrectPayment: "Wrong amount",
   InsufficientFunds: "Not enough ETH",
   InvalidBoardId: "Board unavailable",
+  NotConnected: "Connect wallet first",
+  WrongNetwork: "Switch to Base Sepolia",
   Unknown: "Unlock failed",
 };
 
@@ -143,7 +145,16 @@ function BoardCard({
   onUnlockSettled: () => void;
 }) {
   const { isUnlocked, isLoading, refetch } = useIsUnlocked(contractId);
-  const { unlock, isBusy, isSuccess, errorKind, txHash, unlockPrice, reset } = useUnlockBoard();
+  const {
+    unlock,
+    isBusy,
+    isWalletConnecting,
+    isSuccess,
+    errorKind,
+    txHash,
+    unlockPrice,
+    reset,
+  } = useUnlockBoard();
 
   const [justUnlocked, setJustUnlocked] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -198,12 +209,14 @@ function BoardCard({
   }, [errorKind]);
 
   function handleUnlockClick() {
-    if (isUnlockLocked || isBusy || justUnlocked) return;
+    // isWalletConnecting: F5 sonrası reconnect sürerken tıklama yutulur —
+    // "Connect wallet first" demek o an yanlış olurdu.
+    if (isUnlockLocked || isBusy || justUnlocked || isWalletConnecting) return;
 
     settledRef.current = false;
     setMessage(null);
     setJustUnlocked(false); // hatadan sonraki denemede eski ✓ bir an görünmesin
-    reset();
+    reset(); // write hatası + guard hatası (NotConnected/WrongNetwork) birlikte temizlenir
 
     onUnlockStart(contractId);
     unlock(contractId);
@@ -226,13 +239,17 @@ function BoardCard({
   if (!isUnlocked || isBusy || justUnlocked) {
     const priceLabel = unlockPrice != null ? `${formatEther(unlockPrice)} ETH` : null;
 
+    // Sıra korunuyor: isBusy dalları önce (mevcut davranış), "Connecting…"
+    // yalnızca boştaki butonun yerine geçiyor.
     const label = justUnlocked
       ? "Unlocked ✓"
       : isBusy && !txHash
         ? "Confirm in wallet…"
         : isBusy
           ? "Unlocking…"
-          : "Unlock";
+          : isWalletConnecting
+            ? "Connecting…"
+            : "Unlock";
 
     return (
       <div className={[CARD_SHELL, "border-white/10 bg-black/20"].join(" ")}>
@@ -262,7 +279,7 @@ function BoardCard({
           <button
             type="button"
             onClick={handleUnlockClick}
-            disabled={isUnlockLocked || isBusy || justUnlocked}
+            disabled={isUnlockLocked || isBusy || justUnlocked || isWalletConnecting}
             className={[
               "px-2.5 py-1 rounded-full shrink-0",
               "border border-brand-primary/40 bg-brand-primary/10 text-brand-primary",
