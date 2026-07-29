@@ -19,6 +19,7 @@ import StatsPanel from "@/components/StatsPanel";
 import GameButtons from "@/components/GameButtons";
 import BottomNav from "@/components/BottomNav";
 import BoardSelect from "@/components/BoardSelect";
+import WalletStrip from "@/components/WalletStrip";
 
 export default function Home() {
   const [selectedBoardId, setSelectedBoardId] = useState(1);
@@ -112,13 +113,9 @@ export default function Home() {
           <h1 className="text-3xl sm:text-4xl font-led tracking-[0.2em] text-brand-core [text-shadow:0_0_6px_rgba(223,238,255,0.9),0_0_16px_rgba(59,130,246,0.55),0_0_34px_rgba(59,130,246,0.3)]">
             PEG SOLITAIRE
           </h1>
-          <span className="flex items-center gap-3 text-[11px] font-mono tracking-[0.25em] text-brand-muted">
-            <span aria-hidden className="h-px w-10 bg-gradient-to-r from-transparent to-[#3b5a99]" />
-            <span aria-hidden className="h-1 w-1 rounded-full bg-brand-muted [box-shadow:0_0_4px_rgba(107,140,206,0.8)]" />
-            BASE NETWORK
-            <span aria-hidden className="h-1 w-1 rounded-full bg-brand-muted [box-shadow:0_0_4px_rgba(107,140,206,0.8)]" />
-            <span aria-hidden className="h-px w-10 bg-gradient-to-l from-transparent to-[#3b5a99]" />
-          </span>
+          {/* Eski "• BASE NETWORK •" şeridi — aynı şerit, artık cüzdan
+              aksiyonunu taşıyor. Süsleme/tipografi MetaStrip'te birebir duruyor. */}
+          <WalletStrip />
         </header>
 
         {/* Stats panel */}

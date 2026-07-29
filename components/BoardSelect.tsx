@@ -8,7 +8,7 @@ import { BOARDS } from "@/lib/boards";
 import type { BoardLayout } from "@/lib/types";
 import { useIsUnlocked } from "@/lib/hooks/useIsUnlocked";
 import { useUnlockBoard, type UnlockErrorKind } from "@/lib/hooks/useUnlockBoard";
-import WalletBar from "./WalletBar";
+import WalletStatus from "./WalletStatus";
 
 type BoardSelectProps = {
   selectedId: number;
@@ -26,7 +26,9 @@ const ERROR_MESSAGES: Record<Exclude<UnlockErrorKind, "AlreadyUnlocked">, string
   IncorrectPayment: "Wrong amount",
   InsufficientFunds: "Not enough ETH",
   InvalidBoardId: "Board unavailable",
-  NotConnected: "Connect wallet first",
+  // "above": connect aksiyonu artık başlıktaki şeritte ve panel header'ı
+  // kapatmıyor, kullanıcı oraya bakmalı.
+  NotConnected: "Connect wallet above",
   WrongNetwork: "Switch to Base Sepolia",
   Unknown: "Unlock failed",
 };
@@ -364,7 +366,8 @@ export default function BoardSelect({
           </button>
         </div>
 
-        <WalletBar />
+        {/* Sadece durum — connect/disconnect aksiyonu header'daki WalletStrip'te. */}
+        <WalletStatus />
 
         <div className="flex flex-col gap-2">
           {entries.map(([contractId, board]) => (
