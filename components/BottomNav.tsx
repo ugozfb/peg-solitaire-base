@@ -1,7 +1,5 @@
-// Alt navigasyon: Play / Boards / Leaderboard / Profile.
+// Alt navigasyon: V1'de sadece Play + Boards görünür.
 // Boards dışındaki sekmeler henüz aktif değil — sadece görsel.
-
-const ITEMS = ["Play", "Boards", "Leaderboard", "Profile"];
 
 function PlayIcon() {
   return (
@@ -84,7 +82,16 @@ function ProfileIcon() {
   );
 }
 
-const ICONS = [PlayIcon, BoardsIcon, LeaderboardIcon, ProfileIcon];
+// Sekme tanımları tek yerde. enabled: false olanlar render'a hiç girmez —
+// V1.1'de leaderboard/profile'ı geri açmak için enabled'ı true yapmak yeterli.
+const TABS = [
+  { key: "play", label: "Play", Icon: PlayIcon, enabled: true },
+  { key: "boards", label: "Boards", Icon: BoardsIcon, enabled: true },
+  { key: "leaderboard", label: "Leaderboard", Icon: LeaderboardIcon, enabled: false },
+  { key: "profile", label: "Profile", Icon: ProfileIcon, enabled: false },
+];
+
+const VISIBLE_TABS = TABS.filter((tab) => tab.enabled);
 
 type BottomNavProps = {
   onBoardsClick?: () => void;
@@ -97,25 +104,24 @@ export default function BottomNav({ onBoardsClick }: BottomNavProps) {
         aria-hidden
         className="absolute top-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-brand-dim to-transparent"
       />
-      <div className="grid grid-cols-4 max-w-[380px] mx-auto">
-        {ITEMS.map((item, idx) => {
-          const Icon = ICONS[idx];
-          const isBoards = item === "Boards";
+      <div className="flex justify-center gap-4 max-w-[380px] mx-auto">
+        {VISIBLE_TABS.map(({ key, label, Icon }) => {
+          const isBoards = key === "boards";
           return (
             <button
-              key={item}
+              key={key}
               type="button"
               onClick={isBoards ? onBoardsClick : undefined}
               className={[
-                "flex flex-col items-center justify-center gap-1 py-2",
+                "flex flex-col items-center justify-center gap-1 py-2 w-[88px]",
                 "text-center text-[10px] font-mono tracking-wider",
-                idx === 0
+                key === "play"
                   ? "text-brand-primary [text-shadow:0_0_8px_rgba(59,130,246,0.5)]"
                   : "text-brand-dim",
               ].join(" ")}
             >
               <Icon />
-              {item.toUpperCase()}
+              {label.toUpperCase()}
             </button>
           );
         })}
