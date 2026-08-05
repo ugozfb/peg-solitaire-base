@@ -7,8 +7,16 @@
 //
 // Süslemeler aria-hidden ve tıklanamaz: aksiyon HER ZAMAN children'a bağlanır.
 // Böylece şerit interaktif olduğunda da görsel ritim aynı kalıyor.
+//
+// Board-adı şeridi ("• ENGLISH BOARD •") farklı ölçüler kullanıyor (text-xs,
+// tracking-0.3em, uppercase, w-8 çizgi, <p> tag'i, mt-10). Tek kaynağa
+// çıkarmak için tipografi/sarmalayıcı/çizgi ayrı prop'lar üzerinden esnetildi;
+// default'lar WalletStrip'in mevcut görünümünü birebir korur.
 
-import type { ReactNode } from "react";
+import type { ElementType, ReactNode } from "react";
+
+const DEFAULT_TEXT_CLASSNAME = "text-[11px] tracking-[0.25em]";
+const DEFAULT_LINE_WIDTH = "w-10";
 
 function Dot() {
   return (
@@ -19,14 +27,34 @@ function Dot() {
   );
 }
 
-export default function MetaStrip({ children }: { children: ReactNode }) {
+export default function MetaStrip({
+  children,
+  as: Tag = "span",
+  textClassName = DEFAULT_TEXT_CLASSNAME,
+  wrapperClassName = "",
+  lineWidth = DEFAULT_LINE_WIDTH,
+}: {
+  children: ReactNode;
+  as?: ElementType;
+  textClassName?: string;
+  wrapperClassName?: string;
+  lineWidth?: string;
+}) {
   return (
-    <span className="flex items-center gap-3 text-[11px] font-mono tracking-[0.25em] text-brand-muted">
-      <span aria-hidden className="h-px w-10 bg-gradient-to-r from-transparent to-[#3b5a99]" />
+    <Tag
+      className={[
+        "flex items-center gap-3 font-mono text-brand-muted",
+        textClassName,
+        wrapperClassName,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <span aria-hidden className={`h-px ${lineWidth} bg-gradient-to-r from-transparent to-[#3b5a99]`} />
       <Dot />
       {children}
       <Dot />
-      <span aria-hidden className="h-px w-10 bg-gradient-to-l from-transparent to-[#3b5a99]" />
-    </span>
+      <span aria-hidden className={`h-px ${lineWidth} bg-gradient-to-l from-transparent to-[#3b5a99]`} />
+    </Tag>
   );
 }

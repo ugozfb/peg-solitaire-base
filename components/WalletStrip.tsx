@@ -156,21 +156,23 @@ export default function WalletStrip() {
 
   return (
     <MetaStrip>
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={disabled}
-        aria-label="Connect wallet"
-        className={[
-          LABEL_BASE,
-          hasError ? "text-red-400/90" : "text-brand-muted",
-          disabled
-            ? "opacity-50"
-            : "hover:text-brand-primary hover:[text-shadow:0_0_8px_rgba(91,155,255,0.5)]",
-        ].join(" ")}
-      >
-        {label}
-      </button>
+      <span aria-live="polite" aria-atomic="true">
+        <button
+          type="button"
+          onClick={handleClick}
+          disabled={disabled}
+          aria-label="Connect wallet"
+          className={[
+            LABEL_BASE,
+            hasError ? "text-red-400/90" : "text-brand-muted",
+            disabled
+              ? "opacity-50"
+              : "hover:text-brand-primary hover:[text-shadow:0_0_8px_rgba(91,155,255,0.5)]",
+          ].join(" ")}
+        >
+          {label}
+        </button>
+      </span>
     </MetaStrip>
   );
 }
