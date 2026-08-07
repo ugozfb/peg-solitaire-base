@@ -1,21 +1,32 @@
 {
   "contractName": "PegSolitaireBoards",
+  "sourceName": "contracts/PegSolitaireBoards.sol",
+  "fullyQualifiedName": "contracts/PegSolitaireBoards.sol:PegSolitaireBoards",
   "network": "baseSepolia",
   "chainId": 84532,
-  "contractAddress": "0x5c27865c00844622bb92546124025019c566e471",
-  "deploymentTx": "0x1bc85b6592bc007209c2541386c42fbc8d6874c3af656e9b61248fc4913a3222",
-  "blockNumber": 44059021,
-  "deployer": "0xAB6FC7Fc5E0D76805A129757a0B64720E5726020",
+  "contractAddress": "0x8b6a648db759d984de93c07dc0969388df62a11d",
+  "deploymentTx": "0x706435fc04d817de6cafa42714e86497a4529f6516e728c3e81d3c7d6c589bd9",
+  "blockNumber": 45168378,
+  "deployer": "0x9825c49f43fdf295608fd99b4bed791eccbc3ae0",
   "constructorArgs": [
     "400000000000000",
-    "0xAB6FC7Fc5E0D76805A129757a0B64720E5726020"
+    "0x9825c49f43fdf295608fd99b4bed791eccbc3ae0"
   ],
   "unlockPriceWei": "400000000000000",
   "unlockPriceEth": "0.0004",
-  "solcVersion": "0.8.24",
-  "optimizer": {
-    "enabled": true,
-    "runs": 200
+  "compiler": {
+    "solcVersion": "0.8.24",
+    "solcLongVersion": "0.8.24+commit.e11b9ed9",
+    "evmVersion": "shanghai",
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "remappings": [
+      "project/:@openzeppelin/contracts/=npm/@openzeppelin/contracts@5.6.1/"
+    ],
+    "buildProfile": "default",
+    "buildInfoId": "solc-0_8_24-682300096d27e6a4570433ab7680b42ba17f22e4"
   },
-  "timestamp": "2026-07-13T06:52:24.604Z"
+  "timestamp": "2026-08-07T12:17:23.647Z"
 }

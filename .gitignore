@@ -54,3 +54,5 @@ next-env.d.ts
 /artifacts
 /cache
 !.env.example
+deploy-info.*.bak.json
+deploy-info.*.bak.json
