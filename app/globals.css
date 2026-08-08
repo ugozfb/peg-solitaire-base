@@ -40,3 +40,32 @@ body {
 .animate-pulse-glow {
   animation: pulse-glow 1.5s ease-in-out infinite;
 }
+
+@keyframes ring-breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 6px 2px rgba(37, 99, 235, 0.6);
+    border-color: rgba(37, 99, 235, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 16px 5px rgba(0, 82, 255, 1);
+    border-color: rgba(0, 82, 255, 1);
+  }
+}
+
+.animate-ring-breathe {
+  animation: ring-breathe 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-glow {
+    animation: none;
+    box-shadow: 0 0 10px 3px rgba(37, 99, 235, 0.75);
+  }
+
+  .animate-ring-breathe {
+    animation: none;
+    box-shadow: 0 0 12px 4px rgba(0, 82, 255, 0.9);
+    border-color: rgba(0, 82, 255, 0.9);
+  }
+}

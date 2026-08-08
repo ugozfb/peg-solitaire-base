@@ -28,7 +28,10 @@ export default function Peg({
     >
       {/* Hedef glow (clip-path olmayan katman, dışa taşan parlamayı keser) */}
       {isValidTarget && (
-        <span className="absolute inset-0 animate-pulse-glow rounded-full" />
+        <>
+          <span className="absolute inset-0 animate-pulse-glow rounded-full" />
+          <span className="absolute inset-[28%] rounded-full ring-2 ring-[#0052FF]/70 pointer-events-none" />
+        </>
       )}
 
       {/* Delik (hexagon, içe gömük) */}
@@ -47,9 +50,12 @@ export default function Peg({
             "bg-[radial-gradient(circle_at_34%_28%,#5a5f6b_0%,#33373f_28%,#16181d_62%,#050608_100%)]",
             "shadow-[0_4px_8px_rgba(0,0,0,0.65),inset_0_2px_3px_rgba(255,255,255,0.25),inset_0_-3px_5px_rgba(0,0,0,0.5)]",
             "transition-transform duration-200 ease-out",
-            isSelected ? "scale-110 ring-2 ring-[#2563EB] shadow-[0_0_10px_3px_rgba(37,99,235,0.8)]" : "",
+            isSelected ? "scale-110" : "",
           ].join(" ")}
         >
+          {isSelected && (
+            <span className="absolute inset-[-15%] rounded-full border-2 border-[#2563EB] animate-ring-breathe pointer-events-none" />
+          )}
           <span className="absolute top-[14%] left-[22%] w-[26%] h-[20%] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.55)_0%,transparent_70%)] pointer-events-none" />
         </span>
       )}
