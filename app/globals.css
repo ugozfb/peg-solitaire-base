@@ -3,6 +3,8 @@
 :root {
   --background: #020817;
   --foreground: #ededed;
+  /* TEK KAYNAK: app/page.tsx içindeki MOVE_DURATION (220) ile aynı olmalı. */
+  --move-duration: 220ms;
 }
 
 @theme inline {
@@ -57,7 +59,28 @@ body {
   animation: ring-breathe 1.4s ease-in-out infinite;
 }
 
+/* Yakalanan peg: erime (fade-out + küçülme). */
+@keyframes peg-dissolve {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+.peg-dissolve {
+  animation: peg-dissolve var(--move-duration) ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .peg-dissolve {
+    animation: none;
+    opacity: 0;
+  }
+
   .animate-pulse-glow {
     animation: none;
     box-shadow: 0 0 10px 3px rgba(37, 99, 235, 0.75);

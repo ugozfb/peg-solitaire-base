@@ -6,6 +6,8 @@ type PegProps = {
   hasPeg: boolean;
   isSelected: boolean;
   isValidTarget: boolean;
+  /** Yakalanan peg: commit'ten önce erime (fade-out) animasyonu oynar. */
+  isDissolving?: boolean;
   onClick: () => void;
 };
 
@@ -13,6 +15,7 @@ export default function Peg({
   hasPeg,
   isSelected,
   isValidTarget,
+  isDissolving = false,
   onClick,
 }: PegProps) {
   return (
@@ -51,6 +54,7 @@ export default function Peg({
             "shadow-[0_4px_8px_rgba(0,0,0,0.65),inset_0_2px_3px_rgba(255,255,255,0.25),inset_0_-3px_5px_rgba(0,0,0,0.5)]",
             "transition-transform duration-200 ease-out",
             isSelected ? "scale-110" : "",
+            isDissolving ? "peg-dissolve" : "",
           ].join(" ")}
         >
           {isSelected && (

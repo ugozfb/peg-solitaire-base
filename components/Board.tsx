@@ -13,6 +13,7 @@ type BoardProps = {
   validTargets: Position[];
   onCellClick: (pos: Position) => void;
   ruleSet: RuleSet;
+  pendingCapture?: Position | null;
 };
 
 function isSamePosition(a: Position | null, b: Position): boolean {
@@ -25,6 +26,7 @@ export default function Board({
   validTargets,
   onCellClick,
   ruleSet,
+  pendingCapture = null,
 }: BoardProps) {
   const rows = board.length;
   const cols = board[0]?.length ?? 0;
@@ -98,6 +100,7 @@ export default function Board({
                           isValidTarget={validTargets.some(
                             (t) => t.row === pos.row && t.col === pos.col
                           )}
+                          isDissolving={isSamePosition(pendingCapture, pos)}
                           onClick={() => onCellClick(pos)}
                         />
                       </div>
@@ -139,6 +142,7 @@ export default function Board({
                         isValidTarget={validTargets.some(
                           (t) => t.row === pos.row && t.col === pos.col
                         )}
+                        isDissolving={isSamePosition(pendingCapture, pos)}
                         onClick={() => onCellClick(pos)}
                       />
                     </div>

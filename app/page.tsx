@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   applyMove,
   countPegs,
@@ -22,11 +22,26 @@ import BoardSelect from "@/components/BoardSelect";
 import WalletStrip from "@/components/WalletStrip";
 import MetaStrip from "@/components/MetaStrip";
 
+// Hamle animasyonu süresi (ms). TEK KAYNAK: globals.css'teki
+// --move-duration bu değerle birebir aynı olmalı (220ms).
+const MOVE_DURATION = 220;
+
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
 export default function Home() {
   const [selectedBoardId, setSelectedBoardId] = useState(1);
   const [boardSelectOpen, setBoardSelectOpen] = useState(false);
   const LAYOUT = BOARDS[selectedBoardId];
   const [game, setGame] = useState<GameState>(() => initializeGame(LAYOUT));
+  // Eriyen (yakalanan) peg'in konumu; animasyon bitince commit edilir.
+  const [pendingCapture, setPendingCapture] = useState<Position | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const moveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const timerRunning = game.moves.length > 0 && game.status === "playing";
   const timer = useGameTimer(timerRunning);
 
@@ -34,7 +49,25 @@ export default function Home() {
     ? getValidMoves(game, game.selectedPeg, LAYOUT.ruleSet)
     : [];
 
+  // Unmount'ta bekleyen hamle timeout'unu temizle.
+  useEffect(() => {
+    return () => {
+      if (moveTimeoutRef.current) clearTimeout(moveTimeoutRef.current);
+    };
+  }, []);
+
+  // Animasyon ortasında restart/undo/board-switch güvenli olsun diye.
+  function cancelPendingMove() {
+    if (moveTimeoutRef.current) {
+      clearTimeout(moveTimeoutRef.current);
+      moveTimeoutRef.current = null;
+    }
+    setPendingCapture(null);
+    setIsAnimating(false);
+  }
+
   function handleCellClick(pos: Position) {
+    if (isAnimating) return;
     if (game.status !== "playing") return;
 
     const cell = game.board[pos.row][pos.col];
@@ -49,9 +82,23 @@ export default function Home() {
           row: (game.selectedPeg.row + pos.row) / 2,
           col: (game.selectedPeg.col + pos.col) / 2,
         };
-        setGame((g) =>
-          applyMove(g, { from: game.selectedPeg!, over, to: pos }, LAYOUT.ruleSet)
-        );
+        // Hamleyi şimdi sabitle: timeout içinde game.selectedPeg bayatlar.
+        const move = { from: game.selectedPeg, over, to: pos };
+
+        if (prefersReducedMotion()) {
+          setGame((g) => applyMove(g, move, LAYOUT.ruleSet));
+          return;
+        }
+
+        // Önce yakalanan peg erisin, sonra gerçek commit.
+        setPendingCapture(over);
+        setIsAnimating(true);
+        moveTimeoutRef.current = setTimeout(() => {
+          moveTimeoutRef.current = null;
+          setGame((g) => applyMove(g, move, LAYOUT.ruleSet));
+          setPendingCapture(null);
+          setIsAnimating(false);
+        }, MOVE_DURATION);
         return;
       }
     }
@@ -65,15 +112,18 @@ export default function Home() {
   }
 
   function handleUndo() {
+    cancelPendingMove();
     setGame((g) => undoLastMove(g));
   }
 
   function handleRestart() {
+    cancelPendingMove();
     setGame(initializeGame(LAYOUT));
     timer.reset();
   }
 
   function handleBoardSelect(id: number) {
+    cancelPendingMove();
     setSelectedBoardId(id);
     setGame(initializeGame(BOARDS[id]));
     timer.reset();
@@ -146,6 +196,7 @@ export default function Home() {
             validTargets={validTargets}
             onCellClick={handleCellClick}
             ruleSet={LAYOUT.ruleSet}
+            pendingCapture={pendingCapture}
           />
 
           {game.status !== "playing" && (
