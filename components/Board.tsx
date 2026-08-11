@@ -57,9 +57,22 @@ export default function Board({
   const originX = (size - 2 * BORDER - gridW) / 2;
   const originY = (size - 2 * BORDER - gridH) / 2;
   const cx = (col: number) => originX + col * (CELL + CELL_GAP) + CELL / 2;
+  // cy iki tahta tipinde de geçerli: grid'in `align-content: center`'ı ile
+  // üçgenin `flex-col + justify-content: center`'ı aynı satır yığınını
+  // (gridH) aynı content box'ta ortalıyor → aynı origin.
   const cy = (row: number) => originY + row * (CELL + CELL_GAP) + CELL / 2;
 
-  const showSlide = !!pendingMove && ruleSet !== "triangular";
+  // Üçgende her satır "flex justify-center" ile KENDİ genişliğine göre ayrı
+  // ortalandığı için yatay origin satır-bağımlı. Sol-hizalı üçgende blocked
+  // hücreler hep satır sonunda olduğundan görünür sıra = col.
+  const triRowW = (row: number) => (row + 1) * CELL + row * CELL_GAP;
+  const triCx = (row: number, col: number) =>
+    (size - 2 * BORDER - triRowW(row)) / 2 + col * (CELL + CELL_GAP) + CELL / 2;
+
+  const showSlide = !!pendingMove;
+  const slideCx = (p: Position) =>
+    ruleSet === "triangular" ? triCx(p.row, p.col) : cx(p.col);
+  const slideCy = (p: Position) => cy(p.row);
 
   return (
     <div className="w-full" style={{ containerType: "inline-size" }}>
@@ -119,6 +132,10 @@ export default function Board({
                             pendingMove?.over ?? null,
                             pos
                           )}
+                          isHidden={
+                            showSlide &&
+                            isSamePosition(pendingMove?.from ?? null, pos)
+                          }
                           onClick={() => onCellClick(pos)}
                         />
                       </div>
@@ -177,7 +194,7 @@ export default function Board({
             </div>
           )}
 
-          {/* Kayan kaynak peg (yalnız ortogonal). Grid'in kardeşi: --board-scale
+          {/* Kayan kaynak peg (her iki tahta tipi). Grid'in kardeşi: --board-scale
               transform'unun içinde yaşadığı için ölçek otomatik uygulanır.
               Gerçek from peg'i isHidden ile gizlendiğinden çakışma olmaz. */}
           {showSlide && pendingMove && (
@@ -187,13 +204,13 @@ export default function Board({
               style={{
                 width: HOLE_SIZE,
                 height: HOLE_SIZE,
-                left: `${cx(pendingMove.from.col)}px`,
-                top: `${cy(pendingMove.from.row)}px`,
+                left: `${slideCx(pendingMove.from)}px`,
+                top: `${slideCy(pendingMove.from)}px`,
                 ["--slide-dx" as string]: `${
-                  cx(pendingMove.to.col) - cx(pendingMove.from.col)
+                  slideCx(pendingMove.to) - slideCx(pendingMove.from)
                 }px`,
                 ["--slide-dy" as string]: `${
-                  cy(pendingMove.to.row) - cy(pendingMove.from.row)
+                  slideCy(pendingMove.to) - slideCy(pendingMove.from)
                 }px`,
               }}
             >
