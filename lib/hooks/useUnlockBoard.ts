@@ -21,6 +21,7 @@ import {
   UserRejectedRequestError,
 } from "viem";
 import { PEG_SOLITAIRE_BOARDS_ABI, CONTRACT_ADDRESS, ACTIVE_CHAIN } from "../contract";
+import { DATA_SUFFIX } from "../attribution";
 
 // NotConnected/WrongNetwork zincire hiç gitmeden, write ÖNCESİ guard'lardan
 // çıkar; diğerleri cüzdan/kontrat cevabından türer.
@@ -203,6 +204,9 @@ export function useUnlockBoard() {
         args: [boardId],
         value: unlockPrice,
         chainId: ACTIVE_CHAIN.id,
+        // ERC-8021 builder code. Kod env'de yokken undefined -> viem calldata'ya
+        // hiçbir şey eklemez, tx aynen bugünkü gibi gider.
+        dataSuffix: DATA_SUFFIX,
       });
     },
     [
