@@ -8,6 +8,8 @@ type PegProps = {
   isValidTarget: boolean;
   /** Yakalanan peg: commit'ten önce erime (fade-out) animasyonu oynar. */
   isDissolving?: boolean;
+  /** Kayan (from) peg: küre overlay'de çizildiği için burada gizlenir. */
+  isHidden?: boolean;
   onClick: () => void;
 };
 
@@ -16,6 +18,7 @@ export default function Peg({
   isSelected,
   isValidTarget,
   isDissolving = false,
+  isHidden = false,
   onClick,
 }: PegProps) {
   return (
@@ -46,7 +49,7 @@ export default function Peg({
       />
 
       {/* Peg (mat siyah küre) */}
-      {hasPeg && (
+      {hasPeg && !isHidden && (
         <span
           className={[
             "relative z-10 rounded-full w-[68%] h-[68%]",

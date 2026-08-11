@@ -75,10 +75,31 @@ body {
   animation: peg-dissolve var(--move-duration) ease-out forwards;
 }
 
+/* Kaynak peg: from → to kayması. Mount anında from'da başlar (mesafe
+   --slide-dx/--slide-dy ile inline verilir), süre peg-dissolve ile aynı. */
+@keyframes peg-slide {
+  from {
+    transform: translate(-50%, -50%);
+  }
+  to {
+    transform: translate(-50%, -50%)
+      translate(var(--slide-dx, 0px), var(--slide-dy, 0px));
+  }
+}
+
+.peg-slide {
+  transform: translate(-50%, -50%);
+  animation: peg-slide var(--move-duration) ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .peg-dissolve {
     animation: none;
     opacity: 0;
+  }
+
+  .peg-slide {
+    animation: none;
   }
 
   .animate-pulse-glow {

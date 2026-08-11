@@ -38,8 +38,13 @@ export default function Home() {
   const [boardSelectOpen, setBoardSelectOpen] = useState(false);
   const LAYOUT = BOARDS[selectedBoardId];
   const [game, setGame] = useState<GameState>(() => initializeGame(LAYOUT));
-  // Eriyen (yakalanan) peg'in konumu; animasyon bitince commit edilir.
-  const [pendingCapture, setPendingCapture] = useState<Position | null>(null);
+  // Oynanan hamle; animasyon bitince commit edilir. Tek state: kaynak peg'in
+  // kayması (from→to) ve yakalanan peg'in erimesi (over) aynı timeout'a bağlı.
+  const [pendingMove, setPendingMove] = useState<{
+    from: Position;
+    over: Position;
+    to: Position;
+  } | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const moveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const timerRunning = game.moves.length > 0 && game.status === "playing";
@@ -62,7 +67,7 @@ export default function Home() {
       clearTimeout(moveTimeoutRef.current);
       moveTimeoutRef.current = null;
     }
-    setPendingCapture(null);
+    setPendingMove(null);
     setIsAnimating(false);
   }
 
@@ -90,13 +95,13 @@ export default function Home() {
           return;
         }
 
-        // Önce yakalanan peg erisin, sonra gerçek commit.
-        setPendingCapture(over);
+        // Önce kaynak peg kaysın + yakalanan peg erisin, sonra gerçek commit.
+        setPendingMove(move);
         setIsAnimating(true);
         moveTimeoutRef.current = setTimeout(() => {
           moveTimeoutRef.current = null;
           setGame((g) => applyMove(g, move, LAYOUT.ruleSet));
-          setPendingCapture(null);
+          setPendingMove(null);
           setIsAnimating(false);
         }, MOVE_DURATION);
         return;
@@ -196,7 +201,7 @@ export default function Home() {
             validTargets={validTargets}
             onCellClick={handleCellClick}
             ruleSet={LAYOUT.ruleSet}
-            pendingCapture={pendingCapture}
+            pendingMove={pendingMove}
           />
 
           {game.status !== "playing" && (

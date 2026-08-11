@@ -1,3 +1,5 @@
+"use client";
+
 // Generic tahta render'ı: BoardLayout'un grid'ini alır, her hücreyi Peg
 // component'i ile render eder. "blocked" hücreler boşluk olarak gösterilir.
 
@@ -13,7 +15,7 @@ type BoardProps = {
   validTargets: Position[];
   onCellClick: (pos: Position) => void;
   ruleSet: RuleSet;
-  pendingCapture?: Position | null;
+  pendingMove?: { from: Position; over: Position; to: Position } | null;
 };
 
 function isSamePosition(a: Position | null, b: Position): boolean {
@@ -26,7 +28,7 @@ export default function Board({
   validTargets,
   onCellClick,
   ruleSet,
-  pendingCapture = null,
+  pendingMove = null,
 }: BoardProps) {
   const rows = board.length;
   const cols = board[0]?.length ?? 0;
@@ -36,6 +38,7 @@ export default function Board({
   const CELL = 33;
   const CELL_GAP = 8;
   const PAD = 32; // p-4 × 2
+  const BORDER = 4; // border-4
   const MAX_BOARD_SIZE = 420; // Üst güvenlik sınırı, tasarım hedefi değil.
 
   const gridW = cols * CELL + (cols - 1) * CELL_GAP;
@@ -45,6 +48,18 @@ export default function Board({
       ? Math.max(gridW, gridH) * 1.18 + PAD
       : Math.max(gridW, gridH) + PAD;
   const size = Math.min(idealSize, MAX_BOARD_SIZE);
+
+  // Kayan peg overlay'inin hücre merkezleri (yalnız ortogonal grid).
+  // Grid `place-content-center` ile ortalandığı için origin, PAD'den değil
+  // ortalama offset'inden gelir: simetrik p-4 sadeleşir, geriye padding-box
+  // (= size − 2×BORDER; box-sizing: border-box) içinde ortalama kalır.
+  // Absolute konumlandırma da bu padding-box'a göre ölçüldüğü için eşleşir.
+  const originX = (size - 2 * BORDER - gridW) / 2;
+  const originY = (size - 2 * BORDER - gridH) / 2;
+  const cx = (col: number) => originX + col * (CELL + CELL_GAP) + CELL / 2;
+  const cy = (row: number) => originY + row * (CELL + CELL_GAP) + CELL / 2;
+
+  const showSlide = !!pendingMove && ruleSet !== "triangular";
 
   return (
     <div className="w-full" style={{ containerType: "inline-size" }}>
@@ -100,7 +115,10 @@ export default function Board({
                           isValidTarget={validTargets.some(
                             (t) => t.row === pos.row && t.col === pos.col
                           )}
-                          isDissolving={isSamePosition(pendingCapture, pos)}
+                          isDissolving={isSamePosition(
+                            pendingMove?.over ?? null,
+                            pos
+                          )}
                           onClick={() => onCellClick(pos)}
                         />
                       </div>
@@ -142,13 +160,53 @@ export default function Board({
                         isValidTarget={validTargets.some(
                           (t) => t.row === pos.row && t.col === pos.col
                         )}
-                        isDissolving={isSamePosition(pendingCapture, pos)}
+                        isDissolving={isSamePosition(
+                          pendingMove?.over ?? null,
+                          pos
+                        )}
+                        isHidden={
+                          showSlide &&
+                          isSamePosition(pendingMove?.from ?? null, pos)
+                        }
                         onClick={() => onCellClick(pos)}
                       />
                     </div>
                   );
                 })
               )}
+            </div>
+          )}
+
+          {/* Kayan kaynak peg (yalnız ortogonal). Grid'in kardeşi: --board-scale
+              transform'unun içinde yaşadığı için ölçek otomatik uygulanır.
+              Gerçek from peg'i isHidden ile gizlendiğinden çakışma olmaz. */}
+          {showSlide && pendingMove && (
+            <div
+              key={`${pendingMove.from.row}-${pendingMove.from.col}-${pendingMove.to.row}-${pendingMove.to.col}`}
+              className="peg-slide absolute z-20 flex items-center justify-center pointer-events-none"
+              style={{
+                width: HOLE_SIZE,
+                height: HOLE_SIZE,
+                left: `${cx(pendingMove.from.col)}px`,
+                top: `${cy(pendingMove.from.row)}px`,
+                ["--slide-dx" as string]: `${
+                  cx(pendingMove.to.col) - cx(pendingMove.from.col)
+                }px`,
+                ["--slide-dy" as string]: `${
+                  cy(pendingMove.to.row) - cy(pendingMove.from.row)
+                }px`,
+              }}
+            >
+              {/* Peg.tsx'teki mat siyah küre ile birebir aynı görsel. */}
+              <span
+                className={[
+                  "relative rounded-full w-[68%] h-[68%]",
+                  "bg-[radial-gradient(circle_at_34%_28%,#5a5f6b_0%,#33373f_28%,#16181d_62%,#050608_100%)]",
+                  "shadow-[0_4px_8px_rgba(0,0,0,0.65),inset_0_2px_3px_rgba(255,255,255,0.25),inset_0_-3px_5px_rgba(0,0,0,0.5)]",
+                ].join(" ")}
+              >
+                <span className="absolute top-[14%] left-[22%] w-[26%] h-[20%] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.55)_0%,transparent_70%)] pointer-events-none" />
+              </span>
             </div>
           )}
         </div>
