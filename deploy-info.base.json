@@ -1,0 +1,32 @@
+{
+  "contractName": "PegSolitaireBoards",
+  "sourceName": "contracts/PegSolitaireBoards.sol",
+  "fullyQualifiedName": "contracts/PegSolitaireBoards.sol:PegSolitaireBoards",
+  "network": "base",
+  "chainId": 8453,
+  "contractAddress": "0x85d5c68870930f7d23514f861f07f938f2e13def",
+  "deploymentTx": "0x93bca40042272126bb73d74a0ab8115aeabb83cae3fe35c36277b6267ecd7b97",
+  "blockNumber": 49882730,
+  "deployer": "0x9825c49f43fdf295608fd99b4bed791eccbc3ae0",
+  "constructorArgs": [
+    "400000000000000",
+    "0x9825c49f43fdf295608fd99b4bed791eccbc3ae0"
+  ],
+  "unlockPriceWei": "400000000000000",
+  "unlockPriceEth": "0.0004",
+  "compiler": {
+    "solcVersion": "0.8.24",
+    "solcLongVersion": "0.8.24+commit.e11b9ed9",
+    "evmVersion": "shanghai",
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "remappings": [
+      "project/:@openzeppelin/contracts/=npm/@openzeppelin/contracts@5.6.1/"
+    ],
+    "buildProfile": "default",
+    "buildInfoId": "solc-0_8_24-1dfb9b87a7762b4a8a0ce505d48a5b743d4a2dcf"
+  },
+  "timestamp": "2026-08-12T17:13:18.930Z"
+}
