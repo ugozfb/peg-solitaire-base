@@ -4,6 +4,7 @@ type GameButtonsProps = {
   onUndo: () => void;
   onRestart: () => void;
   canUndo: boolean;
+  canRestart: boolean;
 };
 
 function UndoIcon() {
@@ -48,6 +49,7 @@ export default function GameButtons({
   onUndo,
   onRestart,
   canUndo,
+  canRestart,
 }: GameButtonsProps) {
   return (
     <div className="flex gap-3 w-full max-w-[380px] mx-auto mt-8">
@@ -69,11 +71,13 @@ export default function GameButtons({
       <button
         type="button"
         onClick={onRestart}
+        disabled={!canRestart}
         className={[
           "flex-1 py-3 rounded-full font-mono text-sm tracking-wider",
           "flex items-center justify-center gap-2",
           "border border-brand-primary/50 bg-black/40 text-brand-primary",
           "shadow-[0_0_12px_rgba(59,130,246,0.25),inset_0_0_8px_rgba(59,130,246,0.08)]",
+          "disabled:opacity-30 disabled:cursor-not-allowed",
           "active:scale-95 transition-transform",
         ].join(" ")}
       >

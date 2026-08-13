@@ -227,6 +227,7 @@ export default function Home() {
           onUndo={handleUndo}
           onRestart={handleRestart}
           canUndo={game.moves.length > 0}
+          canRestart={game.moves.length > 0}
         />
       </main>
 
