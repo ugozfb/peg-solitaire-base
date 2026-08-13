@@ -9,6 +9,7 @@ type GameOverPanelProps = {
   status: "won" | "lost";
   pegsLeft: number;
   onPlayAgain: () => void;
+  onClose: () => void;
   rank: Rank;
 };
 
@@ -27,6 +28,25 @@ function RestartIcon() {
     >
       <path d="M21 12a9 9 0 1 1-3-6.7" />
       <path d="M21 3v5h-5" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M18 6 6 18" />
+      <path d="M6 6l12 12" />
     </svg>
   );
 }
@@ -85,6 +105,7 @@ export default function GameOverPanel({
   status,
   pegsLeft,
   onPlayAgain,
+  onClose,
   rank,
 }: GameOverPanelProps) {
   const [visible, setVisible] = useState(false);
@@ -142,6 +163,20 @@ export default function GameOverPanel({
         ].join(" ")}
         style={{ border: `1px solid ${rank.color}4d` }}
       >
+        {/* Kapat butonu */}
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Kapat"
+          className={[
+            "absolute top-2 right-2 flex items-center justify-center",
+            "w-7 h-7 rounded-full text-brand-muted",
+            "hover:bg-white/10 hover:text-white active:scale-90 transition-colors",
+          ].join(" ")}
+        >
+          <CloseIcon />
+        </button>
+
         {/* Sonuç bloğu: ikon + isim + mesaj, sıkı grup */}
         <div className="flex flex-col items-center gap-2">
           <span

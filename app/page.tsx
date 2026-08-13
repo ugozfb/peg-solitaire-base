@@ -46,6 +46,7 @@ export default function Home() {
     to: Position;
   } | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [resultsDismissed, setResultsDismissed] = useState(false);
   const moveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const timerRunning = game.moves.length > 0 && game.status === "playing";
   const timer = useGameTimer(timerRunning);
@@ -123,6 +124,7 @@ export default function Home() {
 
   function handleRestart() {
     cancelPendingMove();
+    setResultsDismissed(false);
     setGame(initializeGame(LAYOUT));
     timer.reset();
   }
@@ -204,11 +206,12 @@ export default function Home() {
             pendingMove={pendingMove}
           />
 
-          {game.status !== "playing" && (
+          {game.status !== "playing" && !resultsDismissed && (
             <GameOverPanel
               status={game.status}
               pegsLeft={countPegs(game)}
               onPlayAgain={handleRestart}
+              onClose={() => setResultsDismissed(true)}
               rank={getRank(countPegs(game))}
             />
           )}
@@ -221,6 +224,20 @@ export default function Home() {
             />
           )}
         </div>
+
+        {game.status !== "playing" && resultsDismissed && (
+          <button
+            type="button"
+            onClick={() => setResultsDismissed(false)}
+            className={[
+              "mt-4 mx-auto px-6 py-2.5 rounded-full font-mono text-sm tracking-wider",
+              "border border-brand-primary/50 bg-black/40 text-brand-primary",
+              "active:scale-95 transition-transform",
+            ].join(" ")}
+          >
+            SHOW RESULTS
+          </button>
+        )}
 
         {/* Butonlar */}
         <GameButtons
