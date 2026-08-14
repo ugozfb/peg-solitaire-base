@@ -12,6 +12,7 @@
     "hh:test": "hardhat test"
   },
   "dependencies": {
+    "@base-org/account": "2.5.10",
     "@farcaster/miniapp-sdk": "^0.3.0",
     "@farcaster/miniapp-wagmi-connector": "^2.0.0",
     "@openzeppelin/contracts": "^5.6.1",

@@ -19,35 +19,55 @@ import { useEffect, useState } from "react";
 import type { Connector } from "wagmi";
 import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
 import { sdk } from "@farcaster/miniapp-sdk";
+import { FARCASTER_CONNECTOR_TYPE } from "@/lib/wagmi";
 import { shortenAddress } from "@/lib/format";
 import MetaStrip from "./MetaStrip";
 
-const FARCASTER_TYPE = "farcasterMiniApp";
 const INJECTED_TYPE = "injected";
 const COINBASE_TYPE = "coinbaseWallet";
+const BASE_ACCOUNT_TYPE = "baseAccount";
+
+// Config'e elle eklenen genel injected() connector'ının sabit id'si. EIP-6963
+// ile KEŞFEDİLEN cüzdanlarda id rdns olur (io.metamask.mobile, app.phantom,
+// com.okex.wallet ...). Bu tek id kontrolü şart: genel connector cüzdan olsa da
+// olmasa da listede durur, keşfedilen ise yalnızca gerçek cüzdan varsa oluşur —
+// üstelik wagmi config connector'larını keşfedilenlerden ÖNCE sıralıyor, yani
+// yalnızca type'a bakan bir find() her ortamda genel olanı yakalardı.
+const GENERIC_INJECTED_ID = "injected";
 
 // Disconnect iki aşamalı: bir dokunuş "kur", ikincisi uygular. Kurulu hal bu
 // süre sonunda kendiliğinden geri döner — mobilde hover olmadığı için tek
 // dokunuşla yanlışlıkla bağlantı kesilmesin.
 const ARM_TIMEOUT_MS = 3000;
 
-// Mini App içinde: farcaster (host cüzdanı).
-// Web'de: EIP-6963 ile keşfedilen injected cüzdan (io.metamask gibi),
-// yoksa Coinbase Wallet. farcaster web'de ASLA seçilmez — patlar.
-// Birden fazla injected varsa ilki alınıyor; connector seçim modal'ı
-// şimdilik yok (YAGNI).
+// Gerçek Farcaster host'unda: farcaster connector'ı (host cüzdanı).
+// Geri kalan HER yerde — Base App dahil, çünkü o artık standard web app —
+// sıra şu:
+//   1) EIP-6963 ile KEŞFEDİLEN injected cüzdan (MetaMask/Phantom/OKX in-app)
+//   2) baseAccount (Base App + masaüstünde cüzdansız tarayıcı)
+//   3) genel injected() — 6963 duyurmayan cüzdanlar için window.ethereum
+//   4) coinbaseWallet — eski fallback
+// farcaster connector'ı web'de ASLA seçilmez: getProvider() koşulsuz
+// MiniAppSDK.wallet.ethProvider döndürdüğü için patlar. Eski koddaki
+// `type !== FARCASTER_TYPE` fallback'i bunu SAĞLAMIYORDU (bkz. aşağıdaki not).
+// Birden fazla keşfedilen cüzdan varsa ilki alınıyor; seçim modal'ı yok (YAGNI).
+function isDiscoveredInjected(connector: Connector): boolean {
+  return connector.type === INJECTED_TYPE && connector.id !== GENERIC_INJECTED_ID;
+}
+
 function pickConnector(
   connectors: readonly Connector[],
   isMiniApp: boolean,
 ): Connector | undefined {
   if (isMiniApp) {
-    return connectors.find((c) => c.type === FARCASTER_TYPE) ?? connectors[0];
+    return connectors.find((c) => c.type === FARCASTER_CONNECTOR_TYPE) ?? connectors[0];
   }
 
   return (
+    connectors.find(isDiscoveredInjected) ??
+    connectors.find((c) => c.type === BASE_ACCOUNT_TYPE) ??
     connectors.find((c) => c.type === INJECTED_TYPE) ??
-    connectors.find((c) => c.type === COINBASE_TYPE) ??
-    connectors.find((c) => c.type !== FARCASTER_TYPE)
+    connectors.find((c) => c.type === COINBASE_TYPE)
   );
 }
 
@@ -151,6 +171,8 @@ export default function WalletStrip() {
       }}
     >
       {`mini:${String(isMiniApp)} ua:${typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 40) : ""}\n` +
+        `pick:${connector ? `${connector.type}|${connector.id}` : "none"}\n` +
+        `err:${connectError ? connectError.message.slice(0, 60) : "none"}\n` +
         connectors.map((c) => `${c.type}|${c.id}`).join("\n")}
     </div>
   );
