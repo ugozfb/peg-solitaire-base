@@ -173,6 +173,7 @@ export default function WalletStrip() {
       {`mini:${String(isMiniApp)} ua:${typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 40) : ""}\n` +
         `pick:${connector ? `${connector.type}|${connector.id}` : "none"}\n` +
         `pending:${String(isConnectPending)} conn:${String(isConnecting)} recon:${String(isReconnecting)} up:${String(isConnected)}\n` +
+        `rnwv:${String(typeof window !== "undefined" && !!(window as unknown as { ReactNativeWebView?: unknown }).ReactNativeWebView)} iframe:${String(typeof window !== "undefined" && window !== window.parent)}\n` +
         `err:${connectError ? connectError.message.slice(0, 60) : "none"}\n` +
         connectors.map((c) => `${c.type}|${c.id}`).join("\n")}
     </div>
