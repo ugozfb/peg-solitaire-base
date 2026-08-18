@@ -15,9 +15,9 @@
 // connectors alanları deprecated -> mutate + useConnectors().
 // (wagmi.sh/react/api/hooks/useConnect)
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Connector } from "wagmi";
-import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useConnectors, useDisconnect, useReconnect } from "wagmi";
 import { sdk } from "@farcaster/miniapp-sdk";
 import { FARCASTER_CONNECTOR_TYPE } from "@/lib/wagmi";
 import { shortenAddress } from "@/lib/format";
@@ -82,11 +82,17 @@ export default function WalletStrip() {
   const connectors = useConnectors();
   const { mutate: connect, isPending: isConnectPending, error: connectError } = useConnect();
   const { mutate: disconnect } = useDisconnect();
+  const { mutate: reconnect, isPending: isReconnectPending } = useReconnect();
 
   // null = tespit sürüyor. isInMiniApp() async: SSR'da ve top-level
   // pencerede anında false döner, iframe/RN WebView'da host'a sorup
   // 1sn timeout ile karar verir.
   const [isMiniApp, setIsMiniApp] = useState<boolean | null>(null);
+
+  // Reconnect tek atış. Ref, state değil: yeniden render tetiklemesine gerek
+  // yok ve aşağıdaki effect'in deps'i (connectors) mipd keşfiyle değişince
+  // ikinci bir reconnect başlatmasını engelliyor.
+  const didReconnect = useRef(false);
 
   // TEMP DIAGNOSTIC — REMOVE AFTER CONNECTOR DEBUG
   useEffect(() => {
@@ -124,6 +130,31 @@ export default function WalletStrip() {
     };
   }, []);
 
+  // Oturum geri yükleme. WagmiProvider'da reconnectOnMount={false} — çünkü
+  // wagmi'nin mount reconnect'i config'teki TÜM connector'ları sırayla deniyor
+  // (@wagmi/core actions/reconnect.js: for-await döngüsü, break yok) ve
+  // farcaster connector'ının isAuthorized()'ı in-app WebView'da (RN host, ama
+  // Farcaster host DEĞİL) hiç settle olmuyor: SDK oradan webViewEndpoint'e
+  // düşüp cevabı FarcasterFrameCallback event'inde bekliyor, o event hiç
+  // gelmiyor. Döngü asılınca status'u 'connected'/'disconnected' yapan son
+  // blok da çalışmıyor -> kalıcı 'connecting' -> buton hep disabled.
+  //
+  // O yüzden reconnect'i buradan, ORTAM BİLİNDİKTEN SONRA başlatıyoruz:
+  // web'de listeden farcaster düşüyor, gerçek Farcaster host'unda tam liste
+  // gidiyor (orada comlink cevap verdiği için asılma yok — isMiniApp'in true
+  // dönmesi zaten kanalın çalıştığının kanıtı).
+  useEffect(() => {
+    if (isMiniApp === null) return; // tespit bitmeden ASLA
+    if (didReconnect.current) return;
+    didReconnect.current = true;
+
+    if (isMiniApp) reconnect({});
+    else
+      reconnect({
+        connectors: connectors.filter((c) => c.type !== FARCASTER_CONNECTOR_TYPE),
+      });
+  }, [isMiniApp, reconnect, connectors]);
+
   // Kurulu hal kendiliğinden geri döner. Timer effect'te kuruluyor ki unmount
   // olduğunda (başka ekrana geçiş) cleanup ile temizlensin — sızıntı yok.
   useEffect(() => {
@@ -134,7 +165,12 @@ export default function WalletStrip() {
   }, [armed]);
 
   const connector = isMiniApp === null ? undefined : pickConnector(connectors, isMiniApp);
-  const isBusy = isConnectPending || isConnecting || isReconnecting;
+  // isMiniApp === null: ortam henüz bilinmiyor, reconnect başlamadı bile.
+  // Meşgul sayılıyor ki o pencerede buton "CONNECT WALLET (soluk)" değil
+  // "CONNECTING…" göstersin — in-app WebView'da sdk.isInMiniApp() 1sn
+  // timeout'a kadar bekliyor, bu görünür bir süre.
+  const isBusy =
+    isConnectPending || isConnecting || isReconnecting || isReconnectPending || isMiniApp === null;
 
   function handleClick() {
     if (isConnected) {
