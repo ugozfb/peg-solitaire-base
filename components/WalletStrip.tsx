@@ -94,22 +94,6 @@ export default function WalletStrip() {
   // ikinci bir reconnect başlatmasını engelliyor.
   const didReconnect = useRef(false);
 
-  // TEMP DIAGNOSTIC — REMOVE AFTER CONNECTOR DEBUG
-  useEffect(() => {
-    console.log(
-      "[CONNECTOR_DEBUG]",
-      JSON.stringify(
-        connectors.map((c) => ({ id: c.id, type: c.type, name: c.name, uid: c.uid })),
-        null,
-        2,
-      ),
-    );
-    console.log("[ENV_DEBUG]", {
-      isMiniApp,
-      userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "n/a",
-    });
-  }, [connectors, isMiniApp]);
-
   // Disconnect'in "kurulu" hali — adres yerine DISCONNECT gösteriliyor.
   const [armed, setArmed] = useState(false);
 
@@ -187,57 +171,26 @@ export default function WalletStrip() {
     if (connector) connect({ connector });
   }
 
-  // TEMP DIAGNOSTIC — REMOVE AFTER CONNECTOR DEBUG
-  const diagnosticOverlay = (
-    <div
-      style={{
-        position: "fixed",
-        bottom: 4,
-        right: 4,
-        zIndex: 9999,
-        maxWidth: "45vw",
-        fontSize: "10px",
-        lineHeight: 1.3,
-        color: "#0f0",
-        background: "rgba(0,0,0,0.75)",
-        padding: "4px",
-        pointerEvents: "none",
-        whiteSpace: "pre-wrap",
-        wordBreak: "break-all",
-      }}
-    >
-      {`mini:${String(isMiniApp)} ua:${typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 40) : ""}\n` +
-        `pick:${connector ? `${connector.type}|${connector.id}` : "none"}\n` +
-        `pending:${String(isConnectPending)} conn:${String(isConnecting)} recon:${String(isReconnecting)} up:${String(isConnected)}\n` +
-        `rnwv:${String(typeof window !== "undefined" && !!(window as unknown as { ReactNativeWebView?: unknown }).ReactNativeWebView)} iframe:${String(typeof window !== "undefined" && window !== window.parent)}\n` +
-        `err:${connectError ? connectError.message.slice(0, 60) : "none"}\n` +
-        connectors.map((c) => `${c.type}|${c.id}`).join("\n")}
-    </div>
-  );
-
   // Bağlıyken: adres (bağlı olmanın kendisi rengiyle anlatılıyor, ekstra rozet
   // yok) <-> kurulu halde DISCONNECT. Adreste letter-spacing 0.16em: 0.25em'de
   // hex okunaksızlaşıyor. Etiket metinleri şeridin 0.25em'ini koruyor.
   if (isConnected && address) {
     return (
-      <>
-        {diagnosticOverlay}
-        <MetaStrip>
-          <button
-            type="button"
-            onClick={handleClick}
-            aria-label={armed ? "Confirm disconnect wallet" : "Disconnect wallet"}
-            className={[
-              LABEL_BASE,
-              armed
-                ? "text-brand-primary [text-shadow:0_0_8px_rgba(91,155,255,0.55)]"
-                : "tracking-[0.16em] text-brand-core [text-shadow:0_0_8px_rgba(91,155,255,0.35)] hover:text-brand-primary",
-            ].join(" ")}
-          >
-            {armed ? "DISCONNECT" : shortenAddress(address)}
-          </button>
-        </MetaStrip>
-      </>
+      <MetaStrip>
+        <button
+          type="button"
+          onClick={handleClick}
+          aria-label={armed ? "Confirm disconnect wallet" : "Disconnect wallet"}
+          className={[
+            LABEL_BASE,
+            armed
+              ? "text-brand-primary [text-shadow:0_0_8px_rgba(91,155,255,0.55)]"
+              : "tracking-[0.16em] text-brand-core [text-shadow:0_0_8px_rgba(91,155,255,0.35)] hover:text-brand-primary",
+          ].join(" ")}
+        >
+          {armed ? "DISCONNECT" : shortenAddress(address)}
+        </button>
+      </MetaStrip>
     );
   }
 
@@ -258,27 +211,24 @@ export default function WalletStrip() {
   const disabled = !connector || isBusy;
 
   return (
-    <>
-      {diagnosticOverlay}
-      <MetaStrip>
-        <span aria-live="polite" aria-atomic="true">
-          <button
-            type="button"
-            onClick={handleClick}
-            disabled={disabled}
-            aria-label="Connect wallet"
-            className={[
-              LABEL_BASE,
-              hasError ? "text-red-400/90" : "text-brand-muted",
-              disabled
-                ? "opacity-50"
-                : "hover:text-brand-primary hover:[text-shadow:0_0_8px_rgba(91,155,255,0.5)]",
-            ].join(" ")}
-          >
-            {label}
-          </button>
-        </span>
-      </MetaStrip>
-    </>
+    <MetaStrip>
+      <span aria-live="polite" aria-atomic="true">
+        <button
+          type="button"
+          onClick={handleClick}
+          disabled={disabled}
+          aria-label="Connect wallet"
+          className={[
+            LABEL_BASE,
+            hasError ? "text-red-400/90" : "text-brand-muted",
+            disabled
+              ? "opacity-50"
+              : "hover:text-brand-primary hover:[text-shadow:0_0_8px_rgba(91,155,255,0.5)]",
+          ].join(" ")}
+        >
+          {label}
+        </button>
+      </span>
+    </MetaStrip>
   );
 }
