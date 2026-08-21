@@ -3,7 +3,6 @@
 // Generic tahta render'ı: BoardLayout'un grid'ini alır, her hücreyi Peg
 // component'i ile render eder. "blocked" hücreler boşluk olarak gösterilir.
 
-import { useEffect, useRef, useState } from "react";
 import type { BoardCell, Position, RuleSet } from "@/lib/types";
 import Peg from "./Peg";
 
@@ -75,100 +74,8 @@ export default function Board({
     ruleSet === "triangular" ? triCx(p.row, p.col) : cx(p.col);
   const slideCy = (p: Position) => cy(p.row);
 
-  // TEMP DIAGNOSTIC — REMOVE AFTER BUG B DEBUG
-  // Statik ölçüm için ilk boş-olmayan hücreyi bul (blocked değil).
-  let diagRow = -1;
-  let diagCol = -1;
-  outer: for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      if (board[r][c] !== "blocked") {
-        diagRow = r;
-        diagCol = c;
-        break outer;
-      }
-    }
-  }
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const scaledRef = useRef<HTMLDivElement | null>(null);
-  const diagHoleRef = useRef<HTMLDivElement | null>(null);
-  const pegSlideRef = useRef<HTMLDivElement | null>(null);
-  const [diagText, setDiagText] = useState<string[]>([]);
-
-  useEffect(() => {
-    function measure() {
-      const scaledEl = scaledRef.current;
-      const containerEl = containerRef.current;
-      const holeEl = diagHoleRef.current;
-      const pegEl = pegSlideRef.current;
-      if (!scaledEl || !containerEl) return;
-
-      const scaledBox = scaledEl.getBoundingClientRect();
-      const cs = getComputedStyle(scaledEl);
-      const boardScaleVal = cs.getPropertyValue("--board-scale").trim();
-      const transformVal = cs.transform;
-      const computedHeight = cs.height;
-      const containerBox = containerEl.getBoundingClientRect();
-
-      const lines: string[] = [];
-      lines.push(
-        `vw:${window.innerWidth} scale:${boardScaleVal} tf:${transformVal.slice(
-          0,
-          20
-        )}`
-      );
-      lines.push(
-        `boardBox:${scaledBox.width.toFixed(1)}x${scaledBox.height.toFixed(
-          1
-        )} h:${computedHeight}`
-      );
-      lines.push(`containerBox.w:${containerBox.width.toFixed(1)}`);
-
-      if (holeEl && diagRow >= 0) {
-        const holeBox = holeEl.getBoundingClientRect();
-        const gx = holeBox.left + holeBox.width / 2;
-        const gy = holeBox.top + holeBox.height / 2;
-        const jx =
-          (ruleSet === "triangular" ? triCx(diagRow, diagCol) : cx(diagCol));
-        const jy = cy(diagRow);
-        // js cx/cy, scaledEl'in padding-box origin'ine göre local; ekrana
-        // yansıtmak için scaledBox origin + scale uygulanmalı.
-        const scaleNum = parseFloat(boardScaleVal) || 1;
-        const jxScreen = scaledBox.left + BORDER + jx * scaleNum;
-        const jyScreen = scaledBox.top + BORDER + jy * scaleNum;
-        lines.push(
-          `hole${diagRow},${diagCol} grid:(${gx.toFixed(1)},${gy.toFixed(
-            1
-          )}) js:(${jxScreen.toFixed(1)},${jyScreen.toFixed(
-            1
-          )}) Δ:(${(gx - jxScreen).toFixed(1)},${(gy - jyScreen).toFixed(1)})`
-        );
-      } else {
-        lines.push(`hole${diagRow},${diagCol}: not found`);
-      }
-
-      if (pegEl) {
-        const pegBox = pegEl.getBoundingClientRect();
-        lines.push(
-          `pegOverlay:(${(pegBox.left + pegBox.width / 2).toFixed(
-            1
-          )},${(pegBox.top + pegBox.height / 2).toFixed(1)})`
-        );
-      }
-
-      setDiagText(lines);
-    }
-
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  });
-
   return (
-    <div
-      className="w-full"
-      style={{ containerType: "inline-size" }}
-      ref={containerRef}
-    >
+    <div className="w-full" style={{ containerType: "inline-size" }}>
       <div
         style={{
           height: `calc(${size}px * var(--board-scale))`,
@@ -176,7 +83,6 @@ export default function Board({
         }}
       >
         <div
-          ref={scaledRef}
           className={[
             "relative mx-auto aspect-square p-4",
             "rounded-full",
@@ -213,11 +119,6 @@ export default function Board({
                     return (
                       <div
                         key={`${rowIdx}-${colIdx}`}
-                        ref={
-                          rowIdx === diagRow && colIdx === diagCol
-                            ? diagHoleRef
-                            : undefined
-                        }
                         className="flex items-center justify-center"
                         style={{ width: HOLE_SIZE, height: HOLE_SIZE }}
                       >
@@ -267,11 +168,6 @@ export default function Board({
                   return (
                     <div
                       key={`${rowIdx}-${colIdx}`}
-                      ref={
-                        rowIdx === diagRow && colIdx === diagCol
-                          ? diagHoleRef
-                          : undefined
-                      }
                       className="flex items-center justify-center"
                       style={{ width: HOLE_SIZE, height: HOLE_SIZE }}
                     >
@@ -303,7 +199,6 @@ export default function Board({
               Gerçek from peg'i isHidden ile gizlendiğinden çakışma olmaz. */}
           {showSlide && pendingMove && (
             <div
-              ref={pegSlideRef}
               key={`${pendingMove.from.row}-${pendingMove.from.col}-${pendingMove.to.row}-${pendingMove.to.col}`}
               className="peg-slide absolute z-20 flex items-center justify-center pointer-events-none"
               style={{
@@ -332,26 +227,6 @@ export default function Board({
             </div>
           )}
         </div>
-      </div>
-      {/* TEMP DIAGNOSTIC — REMOVE AFTER BUG B DEBUG */}
-      <div
-        style={{
-          position: "fixed",
-          bottom: 4,
-          left: 4,
-          zIndex: 9999,
-          pointerEvents: "none",
-          background: "rgba(0,0,0,0.75)",
-          color: "#39ff6a",
-          fontSize: "9px",
-          lineHeight: 1.3,
-          fontFamily: "monospace",
-          padding: "4px 6px",
-          maxWidth: "96vw",
-          whiteSpace: "pre-wrap",
-        }}
-      >
-        {diagText.join("\n")}
       </div>
     </div>
   );
