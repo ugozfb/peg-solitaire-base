@@ -172,7 +172,7 @@ export default function Board({
       <div
         style={{
           height: `calc(${size}px * var(--board-scale))`,
-          ["--board-scale" as string]: `min(1, calc(100cqw / ${size}))`,
+          ["--board-scale" as string]: `min(1, calc(100cqw / ${size}px))`,
         }}
       >
         <div
